@@ -1,36 +1,94 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 class Board {
     static int[][] boardGrid;
     static int[][] solution;
-    // static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
-    static ArrayList<Integer>[][] possibleBoard;
+    static ArrayList<ArrayList<Integer>> squaresToBeChecked = new ArrayList<>();
+    static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
     static final int empty = 0;
     static final int rowLength = 41;
+
+    static void checkIfSquareIsSolved(int row, int column) {
+        if (possibleBoard.get(row).get(column).size() == 1) {
+            boardGrid[row][column] = possibleBoard.get(row).get(column).getFirst();
+            squaresToBeChecked.add(new ArrayList<>());
+            squaresToBeChecked.getLast().add(row);
+            squaresToBeChecked.getLast().add(column);
+            possibleBoard.get(row).get(column).removeFirst();
+        }
+    }
 
     static void solveRow(int num, int row) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
-        // get row from possibleNum
+        // get row from possibleBoard
         // iterate through squares in row
         // check if the possibleNum of the square has the number in the actual board
         // if that number is there, remove the number
 
-        // Iterator<ArrayList> rowIterator = possibleBoard.get(row).iterator();
+        for (int column = 0; column < 9; column++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                if (possibleNum == num) {
+                    it.remove();
+                    checkIfSquareIsSolved(row, column);
+                    break;
+                }
+            }
+        }
     }
 
-    static void solveColumn(int num, int row) {
+    static void solveColumn(int num, int column) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
 
+        for (int row = 0; row < 9; row++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                if (possibleNum == num) {
+                    it.remove();
+                    checkIfSquareIsSolved(row, column);
+                    break;
+                }
+            }
+        }
     }
 
     static void solveBox(int num, int row, int column) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
+        // if (row < 3) {
+        //    if (column < 3) {
+        //		for (int)
 
+        //    } else if (column < 6) {
+
+        //    } else {
+
+        //    }
+
+        // } else if (row < 6) {
+        //    if (column < 3) {
+
+        //    } else if (column < 6) {
+
+        //    } else {
+
+        //    }
+        // } else {
+        //    if (column < 3) {
+
+        //    } else if (column < 6) {
+
+        //    } else {
+
+        //    }
+        // }
     }
 
     static void Solve() {
@@ -50,27 +108,16 @@ class Board {
 
     // initPossibleBoard()
     // --<
-    // static void initPossibleBoard() {
-    //    for (int row = 0; row < 9; row++) {
-    //        possibleBoard.add(new ArrayList<>());
-    //        for (int square = 0; square < 9; square++) {
-    //            possibleBoard.get(row).add(new ArrayList<>());
-    //            for (int possibleNum = 1; possibleNum <= 9; possibleNum++) {
-    //                possibleBoard.get(row).get(square).add(possibleNum);
-    //            }
-    //        }
-    //    }
-    // }
-
-    // initPossibleBoard()
-    // --<
     static void initPossibleBoard() {
         for (int row = 0; row < 9; row++) {
             possibleBoard.add(new ArrayList<>());
-            for (int square = 0; square < 9; square++) {
+            for (int column = 0; column < 9; column++) {
                 possibleBoard.get(row).add(new ArrayList<>());
-                for (int possibleNum = 1; possibleNum <= 9; possibleNum++) {
-                    possibleBoard.get(row).get(square).add(possibleNum);
+                int square = boardGrid[row][column];
+                if (square == empty) {
+                    for (int possibleNum = 1; possibleNum <= 9; possibleNum++) {
+                        possibleBoard.get(row).get(column).add(possibleNum);
+                    }
                 }
             }
         }
