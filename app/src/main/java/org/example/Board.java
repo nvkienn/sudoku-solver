@@ -1,21 +1,22 @@
 package org.example;
+
 import java.util.ArrayList;
-import 
+
 class Board {
     static int[][] boardGrid;
     static int[][] solution;
-	static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<ArrayList<ArrayList<Integer>>>();
+    static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard =
+            new ArrayList<ArrayList<ArrayList<Integer>>>();
     static final int empty = 0;
     static final int rowLength = 41;
 
-	
-	static void initPossibleBoard() {
-		for {row:possibleBoard} {
-			for {square:row}{
-				for {i}
-			}
-		}
-	}
+    // static void initPossibleBoard() {
+    //	for {row:possibleBoard} {
+    //		for {square:row}{
+    //			for {i}
+    //		}
+    //	}
+    // }
 
     // printBoard
     // --<
