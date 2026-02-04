@@ -5,18 +5,21 @@ import java.util.ArrayList;
 class Board {
     static int[][] boardGrid;
     static int[][] solution;
-    static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard =
-            new ArrayList<ArrayList<ArrayList<Integer>>>();
+    static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
     static final int empty = 0;
     static final int rowLength = 41;
 
-    // static void initPossibleBoard() {
-    //	for {row:possibleBoard} {
-    //		for {square:row}{
-    //			for {i}
-    //		}
-    //	}
-    // }
+    static void initPossibleBoard() {
+        for (int row = 0; row < 9; row++) {
+            possibleBoard.add(new ArrayList<>());
+            for (int square = 0; square < 9; square++) {
+                possibleBoard.get(row).add(new ArrayList<>());
+                for (int possibleNum = 1; possibleNum <= 9; possibleNum++) {
+                    possibleBoard.get(row).get(square).add(possibleNum);
+                }
+            }
+        }
+    }
 
     // printBoard
     // --<
