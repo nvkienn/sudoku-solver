@@ -59,39 +59,55 @@ class Board {
         }
     }
 
+    static void solveBoxMethod(int num, int xRightCoord, int yTopCoord) {
+        for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
+            for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
+                Iterator<Integer> it = possibleBoard.get(xCoord).get(yCoord).iterator();
+                while (it.hasNext()) {
+                    Integer possibleNum = it.next();
+                    if (possibleNum == num) {
+                        it.remove();
+                        checkIfSquareIsSolved(xCoord, yCoord);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     static void solveBox(int num, int row, int column) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
-        // if (row < 3) {
-        //    if (column < 3) {
-        //		for (int)
+        if (row < 3) {
+            if (column < 3) {
+                solveBoxMethod(num, 3, 3);
+            } else if (column < 6) {
+                solveBoxMethod(num, 3, 6);
+            } else {
+                solveBoxMethod(num, 3, 9);
+            }
+        } else if (row < 6) {
+            if (column < 3) {
+                solveBoxMethod(num, 6, 3);
+            } else if (column < 6) {
+                solveBoxMethod(num, 6, 6);
+            } else {
+                solveBoxMethod(num, 6, 9);
+            }
+        } else {
+            if (column < 3) {
+                solveBoxMethod(num, 9, 3);
 
-        //    } else if (column < 6) {
+            } else if (column < 6) {
+                solveBoxMethod(num, 9, 6);
 
-        //    } else {
-
-        //    }
-
-        // } else if (row < 6) {
-        //    if (column < 3) {
-
-        //    } else if (column < 6) {
-
-        //    } else {
-
-        //    }
-        // } else {
-        //    if (column < 3) {
-
-        //    } else if (column < 6) {
-
-        //    } else {
-
-        //    }
-        // }
+            } else {
+                solveBoxMethod(num, 9, 9);
+            }
+        }
     }
 
-    static void Solve() {
+    static void firstRoundSolve() {
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
                 int square = boardGrid[row][column];
@@ -101,9 +117,16 @@ class Board {
                     solveRow(square, row);
                     solveColumn(square, column);
                     solveBox(square, row, column);
+                    printBoard("game");
+                    System.out.println(possibleBoard);
                 }
             }
         }
+    }
+
+    static void solve() {
+        initPossibleBoard();
+        firstRoundSolve();
     }
 
     // initPossibleBoard()
@@ -156,7 +179,6 @@ class Board {
     }
 
     static void printBoard(String boardType) {
-        // print main body
         int[][] board;
         if (boardType.equals("solution")) {
             board = solution;
@@ -176,7 +198,7 @@ class Board {
                     printBoardLine(board[x][y], "|");
                 }
             }
-            System.out.print("\n");
+            System.out.println();
             if (x == 8) {
                 printHorizontalBorder("=", "edge");
             } else if (x % 3 == 2) {
@@ -185,6 +207,7 @@ class Board {
                 printHorizontalBorder("-", "body");
             }
         }
+        System.out.println();
     }
     // -->
 
