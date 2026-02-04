@@ -5,10 +5,65 @@ import java.util.ArrayList;
 class Board {
     static int[][] boardGrid;
     static int[][] solution;
-    static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
+    // static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
+    static ArrayList<Integer>[][] possibleBoard;
     static final int empty = 0;
     static final int rowLength = 41;
 
+    static void solveRow(int num, int row) {
+
+        // possibleBoard.get(row).get(square = column num).get(possibleNum)
+        // get row from possibleNum
+        // iterate through squares in row
+        // check if the possibleNum of the square has the number in the actual board
+        // if that number is there, remove the number
+
+        // Iterator<ArrayList> rowIterator = possibleBoard.get(row).iterator();
+    }
+
+    static void solveColumn(int num, int row) {
+
+        // possibleBoard.get(row).get(square = column num).get(possibleNum)
+
+    }
+
+    static void solveBox(int num, int row, int column) {
+
+        // possibleBoard.get(row).get(square = column num).get(possibleNum)
+
+    }
+
+    static void Solve() {
+        for (int row = 0; row < 9; row++) {
+            for (int column = 0; column < 9; column++) {
+                int square = boardGrid[row][column];
+                if (square == empty) {
+                    continue;
+                } else {
+                    solveRow(square, row);
+                    solveColumn(square, column);
+                    solveBox(square, row, column);
+                }
+            }
+        }
+    }
+
+    // initPossibleBoard()
+    // --<
+    // static void initPossibleBoard() {
+    //    for (int row = 0; row < 9; row++) {
+    //        possibleBoard.add(new ArrayList<>());
+    //        for (int square = 0; square < 9; square++) {
+    //            possibleBoard.get(row).add(new ArrayList<>());
+    //            for (int possibleNum = 1; possibleNum <= 9; possibleNum++) {
+    //                possibleBoard.get(row).get(square).add(possibleNum);
+    //            }
+    //        }
+    //    }
+    // }
+
+    // initPossibleBoard()
+    // --<
     static void initPossibleBoard() {
         for (int row = 0; row < 9; row++) {
             possibleBoard.add(new ArrayList<>());
@@ -21,7 +76,9 @@ class Board {
         }
     }
 
-    // printBoard
+    // -->
+
+    // printBoard(boardType)
     // --<
     static void printHorizontalBorder(String borderType, String part) {
         switch (part) {
