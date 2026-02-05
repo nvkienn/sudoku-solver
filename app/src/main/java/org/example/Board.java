@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 class Board {
@@ -8,19 +9,45 @@ class Board {
     static int[][] solution;
     static ArrayList<ArrayList<Integer>> squaresToBeChecked = new ArrayList<>();
     static ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
+    static HashMap<Integer, Integer> numCounter = new HashMap<>();
     static final int empty = 0;
     static final int rowLength = 41;
 
-    static void checkIfSquareIsSolved(int row, int column) {
-        if (possibleBoard.get(row).get(column).size() == 1) {
-            boardGrid[row][column] = possibleBoard.get(row).get(column).getFirst();
-            squaresToBeChecked.add(new ArrayList<>());
-            squaresToBeChecked.getLast().add(row);
-            squaresToBeChecked.getLast().add(column);
-            possibleBoard.get(row).get(column).removeFirst();
+    // for if size of possibleNum for the square is 1
+    static void updateBoardGrid(int row, int column) {
+        boardGrid[row][column] = possibleBoard.get(row).get(column).getFirst();
+        squaresToBeChecked.add(new ArrayList<>());
+        squaresToBeChecked.getLast().add(row);
+        squaresToBeChecked.getLast().add(column);
+        possibleBoard.get(row).get(column).removeFirst();
+    }
+
+    // clear the list due to a solve
+    static void clearPossibleNumbers(int row, int column) {
+        Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+        while (it.hasNext()) {
+            it.next();
+            it.remove();
         }
     }
 
+    // for if the square is the only square where the number can be
+    static void updateBoardGrid(int num, int row, int column) {
+        boardGrid[row][column] = num;
+        squaresToBeChecked.add(new ArrayList<>());
+        squaresToBeChecked.getLast().add(row);
+        squaresToBeChecked.getLast().add(column);
+        clearPossibleNumbers(row, column);
+    }
+
+    static void checkIfSquareIsSolved(int row, int column) {
+        if (possibleBoard.get(row).get(column).size() == 1) {
+            updateBoardGrid(row, column);
+        }
+    }
+
+    // solveRow
+    // --<
     static void solveRow(int num, int row) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
@@ -42,6 +69,10 @@ class Board {
         }
     }
 
+    // -->
+
+    // solveColumn
+    // --<
     static void solveColumn(int num, int column) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
@@ -59,6 +90,10 @@ class Board {
         }
     }
 
+    // -->
+
+    // solveBoxMethod
+    // --<
     static void solveBoxMethod(int num, int xRightCoord, int yTopCoord) {
         for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
             for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
@@ -75,6 +110,10 @@ class Board {
         }
     }
 
+    // -->
+
+    // solveBox
+    // --<
     static void solveBox(int num, int row, int column) {
 
         // possibleBoard.get(row).get(square = column num).get(possibleNum)
@@ -107,6 +146,10 @@ class Board {
         }
     }
 
+    // -->
+
+    // firstRoundSolve
+    // --<
     static void firstRoundSolve() {
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
@@ -117,16 +160,151 @@ class Board {
                     solveRow(square, row);
                     solveColumn(square, column);
                     solveBox(square, row, column);
-                    printBoard("game");
-                    System.out.println(possibleBoard);
                 }
             }
         }
     }
 
+    // -->
+
+    static void initNumCounter() {
+        numCounter.clear();
+        for (int i = 1; i <= 9; i++) {
+            numCounter.put(i, 0);
+        }
+    }
+
+    static void guaranteedSolveForRow(int num, int row) {
+        for (int column = 0; column < 9; column++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                if (possibleNum == num) {
+                    updateBoardGrid(num, row, column);
+                    return;
+                } else if (possibleNum > num) {
+                    break;
+                }
+            }
+        }
+    }
+
+    static void guaranteedSolveForColumn(int num, int column) {
+        for (int row = 0; row < 9; row++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                if (possibleNum == num) {
+                    updateBoardGrid(num, row, column);
+                    return;
+                } else if (possibleNum > num) {
+                    break;
+                }
+            }
+        }
+    }
+
+    static void guaranteedSolveForBox(int num, int xRightCoord, int yTopCoord) {
+        for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
+            for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
+                Iterator<Integer> it = possibleBoard.get(xCoord).get(yCoord).iterator();
+                while (it.hasNext()) {
+                    Integer possibleNum = it.next();
+                    if (possibleNum == num) {
+                        updateBoardGrid(num, xCoord, yCoord);
+                        return;
+                    } else if (possibleNum > num) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    static void checkIfRowIsSolved(int row) {
+        initNumCounter();
+        for (int column = 0; column < 9; column++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                // adds 1 to the count of possibleNum
+                numCounter.put(possibleNum, numCounter.get(possibleNum) + 1);
+            }
+        }
+        for (int num : numCounter.keySet()) {
+            if (numCounter.get(num) == 1) {
+                guaranteedSolveForRow(num, row);
+            }
+        }
+    }
+
+    static void checkIfColumnIsSolved(int column) {
+        initNumCounter();
+        for (int row = 0; row < 9; row++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                // adds 1 to the count of possibleNum
+                numCounter.put(possibleNum, numCounter.get(possibleNum) + 1);
+            }
+        }
+        for (int num : numCounter.keySet()) {
+            if (numCounter.get(num) == 1) {
+                guaranteedSolveForColumn(num, column);
+            }
+        }
+    }
+
+    static void checkIfBoxIsSolved(int xRightCoord, int yTopCoord) {
+        initNumCounter();
+        for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
+            for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
+                Iterator<Integer> it = possibleBoard.get(xCoord).get(yCoord).iterator();
+                while (it.hasNext()) {
+                    Integer possibleNum = it.next();
+                    numCounter.put(possibleNum, numCounter.get(possibleNum) + 1);
+                }
+            }
+        }
+        for (int num : numCounter.keySet()) {
+            if (numCounter.get(num) == 1) {
+                guaranteedSolveForBox(num, xRightCoord, yTopCoord);
+            }
+        }
+    }
+
+    static void checkAllRowsIfSolved() {
+        for (int row = 0; row < 9; row++) {
+            checkIfRowIsSolved(row);
+        }
+    }
+
+    static void checkAllColumnsIfSolved() {
+        for (int column = 0; column < 9; column++) {
+            checkIfColumnIsSolved(column);
+        }
+    }
+
+    static void checkAllBoxesIfSolved() {
+        for (int x = 3; x <= 9; x += 3) {
+            for (int y = 3; y <= 9; y += 3) {
+                checkIfBoxIsSolved(x, y);
+            }
+        }
+    }
+
+    static void firstRoundCheck() {
+        checkAllRowsIfSolved();
+        checkAllColumnsIfSolved();
+        checkAllBoxesIfSolved();
+    }
+
     static void solve() {
+        printBoard("game");
         initPossibleBoard();
         firstRoundSolve();
+        firstRoundCheck();
+        printBoard("game");
     }
 
     // initPossibleBoard()

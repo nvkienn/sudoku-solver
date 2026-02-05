@@ -1,9 +1,12 @@
 package org.example;
 
+
 public class App {
     public static void main(String[] args) {
         FileUtils.parseBoard("Board.json");
         Board.solve();
+		Board board = new Board();
+		board.boardGrid = File
 
         // ArrayList<Integer> x = new ArrayList<Integer>();
         // x.add(1);
@@ -16,5 +19,9 @@ public class App {
         // be anywhere else in the box/row/column. Meaning that if for the box/row/column, if there
         // is only one occurrence of that number in the possible numbers list, then that number must
         // be in that box.
+        // HashMap<Integer, Integer> numCounter = new HashMap<>();
+        // numCounter.put(1, 0);
+        // numCounter.put(1, numCounter.get(1) + 1);
+        // System.out.println(numCounter.get(1));
     }
 }
