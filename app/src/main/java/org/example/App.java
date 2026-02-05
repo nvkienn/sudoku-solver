@@ -1,12 +1,13 @@
 package org.example;
 
-
 public class App {
     public static void main(String[] args) {
-        FileUtils.parseBoard("Board.json");
-        Board.solve();
-		Board board = new Board();
-		board.boardGrid = File
+        FileUtils parser = new FileUtils();
+        Board board = new Board();
+        parser.parseBoard("Board.json");
+        board.gameBoard = parser.getGameBoard();
+        board.solution = parser.getSolution();
+        board.solve();
 
         // ArrayList<Integer> x = new ArrayList<Integer>();
         // x.add(1);

@@ -8,9 +8,13 @@ import java.util.Scanner; // Import the Scanner class to read text files
 
 public class FileUtils {
 
+    private int[][] gameBoard;
+    private int[][] solution;
+
     /** Takes in a file name, returns file contents as String. */
-    public static String readFile(String fileName) {
-        // --<
+    // readFile(fileName)
+    // --<
+    String readFile(String fileName) {
 
         File myObj = new File(fileName);
 
@@ -25,19 +29,32 @@ public class FileUtils {
             e.printStackTrace();
             return "";
         }
-        // -->
     }
+
+    // -->
 
     /** Takes in a jsonString, fills the Board Class's attribtues. */
-    public static void jsonParser(String jsonString) {
+    // jsonParser(jsonString)
+    // --<
+    void jsonParser(String jsonString) {
         Gson gson = new Gson();
         ParsedBoard parsedBoard = gson.fromJson(jsonString, ParsedBoard.class);
-        Board.boardGrid = parsedBoard.newboard.grids[0].value;
-        Board.solution = parsedBoard.newboard.grids[0].solution;
+        gameBoard = parsedBoard.newboard.grids[0].value;
+        solution = parsedBoard.newboard.grids[0].solution;
     }
 
-    public static void parseBoard(String fileName) {
+    // -->
+
+    void parseBoard(String fileName) {
         String boardJsonString = readFile(fileName);
         jsonParser(boardJsonString);
+    }
+
+    int[][] getGameBoard() {
+        return gameBoard;
+    }
+
+    int[][] getSolution() {
+        return solution;
     }
 }
