@@ -1,11 +1,13 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
 class Board {
     int[][] gameBoard;
+    int[][] gameBoardSaveState = new int[9][9];
     int[][] solution;
     ArrayList<ArrayList<Integer>> squaresToBeChecked = new ArrayList<>();
     ArrayList<ArrayList<Integer>> squaresToBeCheckedTemp = new ArrayList<>();
@@ -32,71 +34,6 @@ class Board {
     void updateBoardGrid(int num, int row, int column) {
         gameBoard[row][column] = num;
         possibleBoard.get(row).get(column).clear();
-    }
-
-    // -->
-    // -->
-
-    // GuaranteeSolves
-    // --<
-    // GuaranteedRow
-    // --<
-    void guaranteedSolveForRow(int num, int row) {
-        for (int column = 0; column < 9; column++) {
-            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
-            while (it.hasNext()) {
-                Integer possibleNum = it.next();
-                if (possibleNum == num) {
-                    updateBoardGrid(num, row, column);
-                    updatePossibleBoard(num, row, column);
-                    return;
-                } else if (possibleNum > num) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // -->
-
-    // GuaranteedColumn
-    // --<
-    void guaranteedSolveForColumn(int num, int column) {
-        for (int row = 0; row < 9; row++) {
-            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
-            while (it.hasNext()) {
-                Integer possibleNum = it.next();
-                if (possibleNum == num) {
-                    updateBoardGrid(num, row, column);
-                    updatePossibleBoard(num, row, column);
-                    return;
-                } else if (possibleNum > num) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // -->
-
-    // GuaranteedBox
-    // --<
-    void guaranteedSolveForBox(int num, int xRightCoord, int yTopCoord) {
-        for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
-            for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
-                Iterator<Integer> it = possibleBoard.get(xCoord).get(yCoord).iterator();
-                while (it.hasNext()) {
-                    Integer possibleNum = it.next();
-                    if (possibleNum == num) {
-                        updateBoardGrid(num, xCoord, yCoord);
-                        updatePossibleBoard(num, xCoord, yCoord);
-                        return;
-                    } else if (possibleNum > num) {
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     // -->
@@ -241,28 +178,97 @@ class Board {
 
     // -->
 
-    void attemptFullSolve() {
-        while (squaresToBeChecked.size() > 0) {
-            goThroughSquaresToBeChecked();
-            checkBoardForSolves();
+    // GuaranteeSolves
+    // --<
+    // GuaranteedRow
+    // --<
+    void guaranteedSolveForRow(int num, int row) {
+        for (int column = 0; column < 9; column++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                if (possibleNum == num) {
+                    updateBoardGrid(num, row, column);
+                    updatePossibleBoard(num, row, column);
+                    return;
+                } else if (possibleNum > num) {
+                    break;
+                }
+            }
         }
+    }
+
+    // -->
+
+    // GuaranteedColumn
+    // --<
+    void guaranteedSolveForColumn(int num, int column) {
+        for (int row = 0; row < 9; row++) {
+            Iterator<Integer> it = possibleBoard.get(row).get(column).iterator();
+            while (it.hasNext()) {
+                Integer possibleNum = it.next();
+                if (possibleNum == num) {
+                    updateBoardGrid(num, row, column);
+                    updatePossibleBoard(num, row, column);
+                    return;
+                } else if (possibleNum > num) {
+                    break;
+                }
+            }
+        }
+    }
+
+    // -->
+
+    // GuaranteedBox
+    // --<
+    void guaranteedSolveForBox(int num, int xRightCoord, int yTopCoord) {
+        for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
+            for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
+                Iterator<Integer> it = possibleBoard.get(xCoord).get(yCoord).iterator();
+                while (it.hasNext()) {
+                    Integer possibleNum = it.next();
+                    if (possibleNum == num) {
+                        updateBoardGrid(num, xCoord, yCoord);
+                        updatePossibleBoard(num, xCoord, yCoord);
+                        return;
+                    } else if (possibleNum > num) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // -->
+    // -->
+
+    void attemptFullSolve() {
+        do {
+            copyTwoDimensionalArray(gameBoard, gameBoardSaveState);
+            System.out.println("This is the save state");
+            printBoard("gameBoardSaveState");
+            checkBoardForSolves();
+            System.out.println("This is the state after checking for solves.");
+            printBoard("game");
+            System.out.println("This is the save state");
+            printBoard("gameBoardSaveState");
+
+            System.out.println("I've looped once!");
+            System.out.println(Arrays.deepEquals(gameBoard, gameBoardSaveState));
+        } while (Arrays.deepEquals(gameBoard, gameBoardSaveState) == false);
     }
 
     void solve() {
         // init solve
+        System.out.println("This is the initial board.");
         printBoard("game");
         initPossibleBoard();
         firstRoundSolve();
-        printBoard("game");
-        printBoard("solution");
-        checkBoardForSolves();
-
-        printBoard("game");
-        printBoard("solution");
 
         // iterative solve
-        // attemptFullSolve();
-        // printBoard("game");
+        attemptFullSolve();
+        System.out.println(possibleBoard);
     }
 
     // eliminate possibleNum due to a square being found
@@ -270,7 +276,7 @@ class Board {
     // updatePossibleBoard
     // --<
     void updatePossibleBoard(int num, int row, int column) {
-        solveBox(num, row, column);
+        solveRow(num, row);
         solveColumn(num, column);
         solveBox(num, row, column);
     }
@@ -455,6 +461,8 @@ class Board {
             board = solution;
         } else if (boardType.equals("game")) {
             board = gameBoard;
+        } else if (boardType.equals("gameBoardSaveState")) {
+            board = gameBoardSaveState;
         } else {
             System.out.println("Invalid boardType given.");
             return;
@@ -480,6 +488,15 @@ class Board {
         }
         System.out.println();
     }
-    // -->
 
+    // -->
+    //
+
+    void copyTwoDimensionalArray(int[][] original, int[][] copy) {
+        for (int row = 0; row < 9; row++) {
+            for (int column = 0; column < 9; column++) {
+                copy[row][column] = original[row][column];
+            }
+        }
+    }
 }

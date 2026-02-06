@@ -1,13 +1,40 @@
 package org.example;
 
+import java.util.Arrays;
+
 public class App {
-    public static void main(String[] args) {
+    void solve(String FileName) {
         FileUtils parser = new FileUtils();
         Board board = new Board();
-        parser.parseBoard("Board.json");
+        parser.parseBoard(FileName);
         board.gameBoard = parser.getGameBoard();
         board.solution = parser.getSolution();
         board.solve();
+        boolean r = Arrays.deepEquals(board.gameBoard, board.solution);
+        if (r == true) {
+            System.out.println(FileName + " was solved.");
+        } else {
+            System.out.println(FileName + " failed to solve.");
+        }
+    }
+
+    public static void main(String[] args) {
+        // App app = new App();
+        App app1 = new App();
+        // App app2 = new App();
+        // App app3 = new App();
+        // App app4 = new App();
+        app1.solve("Board1.json");
+        // app2.solve("Board2.json");
+        // app3.solve("Board3.json");
+        // app4.solve("Board4.json");
+        // app.solve("Board.json");
+        // App app5 = new App();
+        // app5.solve("Board5.json");
+        int x = 5;
+        int y = x;
+        x = 6;
+        System.out.println(y);
 
         // ArrayList<Integer> x = new ArrayList<Integer>();
         // x.add(1);
