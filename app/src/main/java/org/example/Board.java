@@ -8,35 +8,22 @@ import java.util.Iterator;
 class Board {
     int[][] gameBoard;
     int[][] gameBoardSaveState = new int[9][9];
+    ArrayList<int[][]> gameBoardTrySaveState = new ArrayList<int[][]>();
     int[][] solution;
-    ArrayList<ArrayList<Integer>> squaresToBeChecked = new ArrayList<>();
-    ArrayList<ArrayList<Integer>> squaresToBeCheckedTemp = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
+    ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> possibleBoardTrySaveState =
+            new ArrayList<>();
     HashMap<Integer, Integer> numCounter = new HashMap<>();
     final int empty = 0;
     final int rowLength = 41;
 
-    // UpdateBoard
-    // --<
-    // updateBoardGrid(row,column)
-    // for if size of possibleNum for the square is 1
-    // --<
-    void updateBoardGrid(int row, int column) {
-        gameBoard[row][column] = possibleBoard.get(row).get(column).getFirst();
-        possibleBoard.get(row).get(column).clear();
-    }
-
-    // -->
-
     // updateBoardGrid(num,int,row)
-    // for if the square is the only square where the number can be
     // --<
     void updateBoardGrid(int num, int row, int column) {
         gameBoard[row][column] = num;
         possibleBoard.get(row).get(column).clear();
     }
 
-    // -->
     // -->
 
     // Check If Solved
@@ -120,8 +107,9 @@ class Board {
     // --<
     void checkIfSquareIsSolved(int row, int column) {
         if (possibleBoard.get(row).get(column).size() == 1) {
-            updateBoardGrid(row, column);
-            updatePossibleBoard(gameBoard[row][column], row, column);
+            int num = possibleBoard.get(row).get(column).getFirst();
+            updateBoardGrid(num, row, column);
+            updatePossibleBoard(num, row, column);
         }
     }
 
@@ -154,26 +142,6 @@ class Board {
         checkAllRowsIfSolved();
         checkAllColumnsIfSolved();
         checkAllBoxesIfSolved();
-    }
-
-    // -->
-
-    // goThroughSquaresToBeChecked
-    // --<
-    void goThroughSquaresToBeChecked() {
-        squaresToBeCheckedTemp = squaresToBeChecked;
-        squaresToBeChecked.clear();
-        Iterator<ArrayList<Integer>> it = squaresToBeCheckedTemp.iterator();
-        while (it.hasNext()) {
-            ArrayList<Integer> coordinates = it.next();
-            int row = coordinates.get(0);
-            int column = coordinates.get(1);
-            int num = gameBoard[row][column];
-            solveRow(num, row);
-            solveColumn(num, column);
-            solveBox(num, row, column);
-            it.remove();
-        }
     }
 
     // -->
@@ -243,21 +211,222 @@ class Board {
     // -->
     // -->
 
+    // attemptFullSolve
+    // --<
     void attemptFullSolve() {
         do {
             copyTwoDimensionalArray(gameBoard, gameBoardSaveState);
-            System.out.println("This is the save state");
-            printBoard("gameBoardSaveState");
             checkBoardForSolves();
-            System.out.println("This is the state after checking for solves.");
-            printBoard("game");
-            System.out.println("This is the save state");
-            printBoard("gameBoardSaveState");
-
-            System.out.println("I've looped once!");
-            System.out.println(Arrays.deepEquals(gameBoard, gameBoardSaveState));
         } while (Arrays.deepEquals(gameBoard, gameBoardSaveState) == false);
     }
+
+    // -->
+
+    // checkBoardState
+    // --<
+
+    // boardIsFullySolved
+    // --<
+    boolean boardIsFullySolved() {
+        if (boardIsFull() && boardStateIsValid()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // -->
+
+    // boardIsFull
+    // --<
+    boolean boardIsFull() {
+        for (int[] row : gameBoard) {
+            for (int num : row) {
+                if (num == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // -->
+
+    // checkIfRowsAreValid
+    // --<
+    boolean rowsAreValid() {
+        for (int row = 0; row < 9; row++) {
+            initNumCounter();
+            for (int column = 0; column < 9; column++) {
+                int num = gameBoard[row][column];
+                if (num == 0) {
+                    continue;
+                } else {
+                    numCounter.put(num, numCounter.get(num) + 1);
+                    if (numCounter.get(num) == 2) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // -->
+
+    // checkIfColumnsAreValid
+    // --<
+    boolean columnsAreValid() {
+        for (int column = 0; column < 9; column++) {
+            initNumCounter();
+            for (int row = 0; row < 9; row++) {
+                int num = gameBoard[row][column];
+                if (num == 0) {
+                    continue;
+                } else {
+                    numCounter.put(num, numCounter.get(num) + 1);
+                    if (numCounter.get(num) == 2) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // -->
+
+    // checkIfBoxIsValid
+    // --<
+    boolean boxIsValid(int xRightCoord, int yTopCoord) {
+        initNumCounter();
+        for (int xCoord = xRightCoord - 3; xCoord < xRightCoord; xCoord++) {
+            for (int yCoord = yTopCoord - 3; yCoord < yTopCoord; yCoord++) {
+                int num = gameBoard[xCoord][yCoord];
+                if (num == 0) {
+                    continue;
+                } else {
+                    numCounter.put(num, numCounter.get(num) + 1);
+                    if (numCounter.get(num) == 2) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // -->
+
+    // checkIfBoxesAreValid
+    // --<
+    boolean boxesAreValid() {
+        for (int x = 3; x <= 9; x += 3) {
+            for (int y = 3; y <= 9; y += 3) {
+                if (boxIsValid(x, y) == false) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // -->
+
+    // boardStateIsValid
+    // --<
+    boolean boardStateIsValid() {
+        if (rowsAreValid() && columnsAreValid() && boxesAreValid()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // }
+    // -->
+    // -->
+    //
+    void saveState() {
+        gameBoardTrySaveState.add(new int[9][9]);
+        copyTwoDimensionalArray(gameBoard, gameBoardTrySaveState.getLast());
+        possibleBoardTrySaveState.add(new ArrayList<>());
+        copyThreeDimensionalArrayList(possibleBoard, possibleBoardTrySaveState.getLast());
+    }
+
+    // guessAndCheckSolve
+    // --<
+    void guessAndCheckSolve() {
+        // appends the current gameBoard and possibleBoard to their Saves
+        saveState();
+        /**
+         * trying the first possibleNum it comes across as the actual number in the gameBoard,
+         * continues looping through possibleNum to try
+         */
+        for (int row = 0; row < 9; row++) {
+            for (int column = 0; column < 9; column++) {
+                ArrayList<ArrayList<ArrayList<Integer>>> possibleBoardTemp = new ArrayList<>();
+                copyThreeDimensionalArrayList(
+                        possibleBoardTrySaveState.getLast(), possibleBoardTemp);
+                Iterator<Integer> it = possibleBoardTemp.get(row).get(column).iterator();
+                while (it.hasNext()) {
+                    Integer possibleNum = it.next();
+
+                    updateBoardGrid(possibleNum, row, column);
+                    updatePossibleBoard(possibleNum, row, column);
+                    attemptFullSolve();
+
+                    /**
+                     * consider the third recursion. board is fully solved. the guessAndCheck is now
+                     * returned.
+                     */
+                    if (boardStateIsValid()) {
+                        if (boardIsFull()) {
+                            return;
+                        } else {
+                            guessAndCheckSolve();
+                            /**
+                             * we now land back here into the second recursion. if we do nothing, it
+                             * will exit the if else, and then re-enter the for loop, which we dont
+                             * want. so we need to find a way to go back to the first recursion. Of
+                             * course if it's not fully solved in the third recursion and it
+                             * reentered the first recursion, then we want it to enter the for loop
+                             * again. If it's solved, to prevent it from entering the for loop, we
+                             * need to return to escape the function.
+                             */
+                            if (boardIsFull()) {
+                                return;
+                            }
+                            /**
+                             * This sends us back to the first recursion, but also back to this
+                             * point, at which it will return and the recursion will end. Also don't
+                             * have to check that it is invalid, as the only 2 ways we reach here is
+                             * one, it gets returned from a valid and full state, or two, the above
+                             * recursion finishes, at which point the gameBoard will load an earlier
+                             * state which will not be full.
+                             */
+                        }
+                    } else {
+                        gameBoard = gameBoardTrySaveState.getLast();
+                        possibleBoard = possibleBoardTrySaveState.getLast();
+                    }
+                }
+            }
+        }
+        /**
+         * lets say this is the third recursion. all possibleNum has been tried in this state, and
+         * they all lead to invalid states. now we need to backtrack. we need to load a save state
+         * that is made in the second recursion. so we remove the last save state, and load the
+         * second last one. And then the function ends, so it will push it back into the second
+         * recursions's for loop and the cycle continues.
+         */
+        gameBoardTrySaveState.removeLast();
+        possibleBoard = possibleBoardTrySaveState.removeLast();
+        gameBoard = gameBoardTrySaveState.getLast();
+        possibleBoard = possibleBoardTrySaveState.getLast();
+    }
+
+    // -->
 
     void solve() {
         // init solve
@@ -268,7 +437,10 @@ class Board {
 
         // iterative solve
         attemptFullSolve();
-        System.out.println(possibleBoard);
+
+        // guessAndCheckSolve
+        guessAndCheckSolve();
+        printBoard("game");
     }
 
     // eliminate possibleNum due to a square being found
@@ -492,6 +664,8 @@ class Board {
     // -->
     //
 
+    // copyTwoDimensionalArray
+    // --<
     void copyTwoDimensionalArray(int[][] original, int[][] copy) {
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
@@ -499,4 +673,25 @@ class Board {
             }
         }
     }
+
+    // -->
+
+    // copyThreeDimensionalArrayList
+    // --<
+    void copyThreeDimensionalArrayList(
+            ArrayList<ArrayList<ArrayList<Integer>>> original,
+            ArrayList<ArrayList<ArrayList<Integer>>> copy) {
+        for (int row = 0; row < 9; row++) {
+            copy.add(new ArrayList<>());
+            for (int column = 0; column < 9; column++) {
+                copy.get(row).add(new ArrayList<>());
+                Iterator<Integer> it = original.get(row).get(column).iterator();
+                while (it.hasNext()) {
+                    Integer num = it.next();
+                    copy.get(row).get(column).add(num);
+                }
+            }
+        }
+    }
+    // -->
 }

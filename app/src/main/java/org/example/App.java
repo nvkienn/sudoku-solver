@@ -19,28 +19,31 @@ public class App {
     }
 
     public static void main(String[] args) {
-        // App app = new App();
         App app1 = new App();
-        // App app2 = new App();
-        // App app3 = new App();
-        // App app4 = new App();
+        App app2 = new App();
+        App app3 = new App();
+        App app4 = new App();
         app1.solve("Board1.json");
-        // app2.solve("Board2.json");
-        // app3.solve("Board3.json");
-        // app4.solve("Board4.json");
-        // app.solve("Board.json");
-        // App app5 = new App();
-        // app5.solve("Board5.json");
-        int x = 5;
-        int y = x;
-        x = 6;
-        System.out.println(y);
+        app2.solve("Board2.json");
+        app3.solve("Board3.json");
+        app4.solve("Board4.json");
+        App app5 = new App();
+        app5.solve("Board5.json");
+        App app6 = new App();
+        app6.solve("Board6.json");
+        // int x = 5;
+        // int y = x;
+        // x = 6;
+        // System.out.println(y);
 
         // ArrayList<Integer> x = new ArrayList<Integer>();
+        // ArrayList<Integer> y = new ArrayList<Integer>();
         // x.add(1);
         // x.add(2);
         // x.add(3);
-        // System.out.println(x.getLast());
+        // x.add(4);
+        // System.out.println(x);
+        // System.out.println(y);
 
         // complication: checkIfSquareIsSolved right now only accounts for if there can only be one
         // possible number in that square, but does not account for the fact that the number cannot
@@ -51,5 +54,16 @@ public class App {
         // numCounter.put(1, 0);
         // numCounter.put(1, numCounter.get(1) + 1);
         // System.out.println(numCounter.get(1));
+        //
+        //
+        // Try:
+        // Put the first avail number and try.
+        // Solve from here. If another road block is hit, try the next avail number and so on.
+        // This continues until an invalid state is reached, or the board is completely solved.
+        // if an invalid state is reached, reload the save state and try again.
+        // use a 4 dimensional arraylist to store possibleBoard
+        // use a 3 dimensional array to store gameBoard
+        // for each layer of trying a number, add a save state, refernces each save state by the
+        // layer number of each try. might have to do recursion.
     }
 }
