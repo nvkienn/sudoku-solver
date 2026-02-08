@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Arrays;
+
 public class App {
     void solve(String FileName) {
         FileUtils parser = new FileUtils();
@@ -8,17 +10,17 @@ public class App {
         board.gameBoard = parser.getGameBoard();
         board.solution = parser.getSolution();
         board.solve();
-        // boolean r = Arrays.deepEquals(board.gameBoard, board.solution);
-        // if (r == true) {
-        //    System.out.println(FileName + " was solved.");
-        // } else {
-        //    System.out.println(FileName + " failed to solve.");
-        // }
+        boolean r = Arrays.deepEquals(board.gameBoard, board.solution);
+        if (r == true) {
+            System.out.println(FileName + " was solved.");
+        } else {
+            System.out.println(FileName + " failed to solve.");
+        }
     }
 
     public static void main(String[] args) {
         App app = new App();
-        app.solve("Board2.json");
+        app.solve("Board5.json");
 
         // Tests:
         // int x = 5;
@@ -26,12 +28,13 @@ public class App {
         // x = 6;
         // System.out.println(y);
 
-        // ArrayList<Integer> x = new ArrayList<Integer>();
+        // ArrayList<ArrayList<Integer>> x = new ArrayList<>();
         // ArrayList<Integer> y = new ArrayList<Integer>();
-        // x.add(1);
-        // x.add(2);
-        // x.add(3);
-        // x.add(4);
+        // x.add(new ArrayList<>());
+        // x.get(0).add(1);
+        // y = x.get(0);
+        // y.add(2);
+
         // System.out.println(x);
         // System.out.println(y);
 

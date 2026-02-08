@@ -8,7 +8,6 @@ import java.util.Iterator;
 class Board {
     // variables --<
     int[][] gameBoard;
-    int[][] gameBoardSaveState = new int[9][9];
     ArrayList<int[][]> gameBoardTrySaveState = new ArrayList<int[][]>();
     int[][] solution;
     ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
@@ -17,23 +16,31 @@ class Board {
     HashMap<Integer, Integer> numCounter = new HashMap<>();
     final int empty = 0;
     final int rowLength = 41;
+    int counter = 0;
 
     // -->
 
     void solve() { // --<
         // init solve
         System.out.println("This is the initial board.");
-        printBoard("game");
+        printBoard(gameBoard);
         initPossibleBoard();
         firstRoundSolve();
 
         // iterative solve
         attemptFullSolve();
+        printBoard(gameBoard);
 
         // guessAndCheckSolve
         guessAndCheckSolve();
-        System.out.println("This is a possible answer.");
-        printBoard("game");
+
+        // System.out.println("This is a possible answer.");
+        System.out.println("This is the final board.");
+        printBoard(gameBoard);
+        System.out.println("There are " + counter + " possible solutions.");
+        System.out.println(rowsAreValid());
+        System.out.println(columnsAreValid());
+        System.out.println(boxesAreValid());
     }
 
     // -->
@@ -53,36 +60,35 @@ class Board {
     // -->
 
     void attemptFullSolve() { // --<
+        int[][] gameBoardSaveState = new int[9][9];
         do {
-            copyTwoDimensionalArray(gameBoard, gameBoardSaveState);
             checkBoardForSolves();
+            gameBoardSaveState = copyTwoDimensionalArray(gameBoard);
         } while (Arrays.deepEquals(gameBoard, gameBoardSaveState) == false);
     }
 
     // -->
 
     // guessAndCheckSolve --<
-    void saveState() { // --<
-        gameBoardTrySaveState.add(new int[9][9]);
-        copyTwoDimensionalArray(gameBoard, gameBoardTrySaveState.getLast());
-        possibleBoardTrySaveState.add(new ArrayList<>());
-        copyThreeDimensionalArrayList(possibleBoard, possibleBoardTrySaveState.getLast());
-    }
-
-    // -->
 
     void guessAndCheckSolve() { // --<
         // appends the current gameBoard and possibleBoard to their Saves
-        saveState();
+        System.out.println("guessAndCheckSolve was called");
+        printBoard(gameBoard);
         /**
          * trying the first possibleNum it comes across as the actual number in the gameBoard,
          * continues looping through possibleNum to try
          */
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
+                System.out.println("YOOOO");
                 ArrayList<ArrayList<ArrayList<Integer>>> possibleBoardTemp = new ArrayList<>();
-                copyThreeDimensionalArrayList(
-                        possibleBoardTrySaveState.getLast(), possibleBoardTemp);
+                possibleBoardTemp = copyThreeDimensionalArrayList(possibleBoard);
+                System.out.println(possibleBoardTemp.get(row).get(column));
+                if (possibleBoardTemp.get(row).get(column).size() > 9) {
+                    System.out.println(possibleBoardTemp.get(row).get(column));
+                    System.exit(1);
+                }
                 Iterator<Integer> it = possibleBoardTemp.get(row).get(column).iterator();
                 while (it.hasNext()) {
                     Integer possibleNum = it.next();
@@ -97,7 +103,11 @@ class Board {
                      */
                     if (boardStateIsValid()) {
                         if (boardIsFull()) {
+                            System.out.println("HEY");
+                            counter += 1;
                             return;
+                            // gameBoard = gameBoardTrySaveState.getLast();
+                            // possibleBoard = possibleBoardTrySaveState.getLast();
                         } else {
                             System.out.println("A recursed function has been called.");
                             guessAndCheckSolve();
@@ -112,8 +122,11 @@ class Board {
                              * need to return to escape the function.
                              */
                             if (boardIsFull()) {
+                                System.out.println("HEYYYY");
                                 return;
                             }
+                            // gameBoard = gameBoardTrySaveState.getLast();
+                            // possibleBoard = possibleBoardTrySaveState.getLast();
                             /**
                              * This sends us back to the first recursion, but also back to this
                              * point, at which it will return and the recursion will end. Also don't
@@ -125,8 +138,13 @@ class Board {
                         }
                     } else {
                         System.out.println("An invalid state has been reached.");
-                        gameBoard = gameBoardTrySaveState.getLast();
-                        possibleBoard = possibleBoardTrySaveState.getLast();
+                        printBoard(gameBoard);
+                        System.out.println(rowsAreValid());
+                        System.out.println(columnsAreValid());
+                        System.out.println(boxesAreValid());
+                        System.out.println("This is the save state that was loaded");
+                        printBoard(gameBoard);
+                        System.out.println(possibleBoardTemp.get(row).get(column));
                     }
                 }
             }
@@ -139,9 +157,14 @@ class Board {
          * recursions's for loop and the cycle continues.
          */
         gameBoardTrySaveState.removeLast();
-        possibleBoard = possibleBoardTrySaveState.removeLast();
-        gameBoard = gameBoardTrySaveState.getLast();
+        possibleBoardTrySaveState.removeLast();
         possibleBoard = possibleBoardTrySaveState.getLast();
+        // try {
+        //    copyTwoDimensionalArray(gameBoardTrySaveState.getLast(), gameBoard);
+        //    copyThreeDimensionalArrayList(possibleBoardTrySaveState.getLast(), possibleBoard);
+        // } catch (NoSuchElementException e) {
+        //    System.out.println("there is an error but all's good");
+        // }
     }
 
     // -->
@@ -586,18 +609,7 @@ class Board {
 
     // -->
 
-    void printBoard(String boardType) { // --<
-        int[][] board;
-        if (boardType.equals("solution")) {
-            board = solution;
-        } else if (boardType.equals("game")) {
-            board = gameBoard;
-        } else if (boardType.equals("gameBoardSaveState")) {
-            board = gameBoardSaveState;
-        } else {
-            System.out.println("Invalid boardType given.");
-            return;
-        }
+    void printBoard(int[][] board) { // --<
         printHorizontalBorder("=", "edge");
         for (int x = 0; x < board.length; x++) {
             System.out.print("\n||");
@@ -624,19 +636,21 @@ class Board {
     // -->
 
     // copyTools --<
-    void copyTwoDimensionalArray(int[][] original, int[][] copy) { // --<
+    int[][] copyTwoDimensionalArray(int[][] original) { // --<
+        int[][] copy = new int[9][9];
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
                 copy[row][column] = original[row][column];
             }
         }
+        return copy;
     }
 
     // -->
 
-    void copyThreeDimensionalArrayList( // --<
-            ArrayList<ArrayList<ArrayList<Integer>>> original,
-            ArrayList<ArrayList<ArrayList<Integer>>> copy) {
+    ArrayList<ArrayList<ArrayList<Integer>>> copyThreeDimensionalArrayList( // --<
+            ArrayList<ArrayList<ArrayList<Integer>>> original) {
+        ArrayList<ArrayList<ArrayList<Integer>>> copy = new ArrayList<>();
         for (int row = 0; row < 9; row++) {
             copy.add(new ArrayList<>());
             for (int column = 0; column < 9; column++) {
@@ -648,6 +662,7 @@ class Board {
                 }
             }
         }
+        return copy;
     }
     // -->
 
