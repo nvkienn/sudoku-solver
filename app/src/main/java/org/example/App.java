@@ -3,7 +3,7 @@ package org.example;
 import java.util.Arrays;
 
 public class App {
-    void solve(String FileName) {
+    void solve(String FileName) { // --<
         FileUtils parser = new FileUtils();
         Board board = new Board();
         parser.parseBoard(FileName);
@@ -18,11 +18,40 @@ public class App {
         }
     }
 
+    // -->
+
     public static void main(String[] args) {
         App app = new App();
-        app.solve("Board5.json");
+        app.solve("Board6.json");
 
         // Tests:
+        //
+        // Hello hello = new Hello();
+        // hello.y = hello.increase();
+        // hello.increase();
+        // for (int[] row : hello.y) {
+        //     for (int num : row) {
+        //         System.out.println(num);
+        //     }
+        // }
+
+        //
+        //
+        //
+        // Hello hello = new Hello();
+        // hello.x = 2;
+        // hello.decrease();
+        // Hypothesis.
+        // 1. this belongs to the current obj, so x first belongs to hello, then to newHellos
+        // subsequently.
+        // "2,1,0"
+        // 2. this belongs to hello and hello only.
+        // "2,2,2"
+        //
+        // Result: hypothesis 1 is true! it belongs to the current object that the method belongs
+        // to. That's dope and exactly what i need that is very noice.
+
+        //
         // int x = 5;
         // int y = x;
         // x = 6;
@@ -58,5 +87,41 @@ public class App {
         // use a 3 dimensional array to store gameBoard
         // for each layer of trying a number, add a save state, refernces each save state by the
         // layer number of each try. might have to do recursion.
+        //
+        //
+        // Start with the original board, then make a copy of it using a new object. This way, you
+        // always have a original copy, and you can copy back if an invalid result is reached. this
+        // copy should be made just after the iterator, so for every new number that is tested, you
+        // will be trying from the original board. Then, this baord will be solved, and if the state
+        // is still valid, will be passed into another round of recursion where it will be tested.
+        // This board should now become the original board, and another one will be made to make a
+        // copy.
+        // We are not taking in the current board state. we tried to do that, there is too much code
+        // to change, because we have to edit all our code to be able to take in a board of our
+        // choice. instead, we are using the object's own method to act on its own attribute. a new
+        // object is created every recursion.
     }
 }
+
+class Hello { // --<
+    int x;
+    int[][] y = {{1}};
+
+    void decrease() {
+        Hello newHello = new Hello();
+
+        System.out.println(this.x);
+        newHello.x = this.x;
+        if (newHello.x > 0) {
+            newHello.x -= 1;
+            System.out.println("A recursor has been called.");
+            newHello.decrease();
+        }
+    }
+
+    int[][] increase() {
+        Hello newHello = new Hello();
+        newHello.y[0][0] = y[0][0] + 1;
+        return newHello.y;
+    }
+} // -->

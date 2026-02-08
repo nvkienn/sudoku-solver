@@ -32,12 +32,14 @@ class Board {
         printBoard(gameBoard);
 
         // guessAndCheckSolve
-        guessAndCheckSolve();
+        gameBoard = guessAndCheckSolve();
+        if (boardIsFull() == false) {
+            System.out.println("Board is not solvable.");
+        }
 
-        // System.out.println("This is a possible answer.");
         System.out.println("This is the final board.");
         printBoard(gameBoard);
-        System.out.println("There are " + counter + " possible solutions.");
+        // System.out.println("There are " + counter + " possible solutions.");
         System.out.println(rowsAreValid());
         System.out.println(columnsAreValid());
         System.out.println(boxesAreValid());
@@ -69,105 +71,75 @@ class Board {
 
     // -->
 
-    // guessAndCheckSolve --<
-
-    void guessAndCheckSolve() { // --<
-        // appends the current gameBoard and possibleBoard to their Saves
-        System.out.println("guessAndCheckSolve was called");
-        printBoard(gameBoard);
+    int[][] guessAndCheckSolve() { // --<
+        //
         /**
-         * trying the first possibleNum it comes across as the actual number in the gameBoard,
-         * continues looping through possibleNum to try
+         * workBoard is the instance of Board that we will be doing all of our solving attempts on
          */
+        Board workBoard = new Board();
+
+        /** finding the first possibleNum to try */
         for (int row = 0; row < 9; row++) {
             for (int column = 0; column < 9; column++) {
-                System.out.println("YOOOO");
-                ArrayList<ArrayList<ArrayList<Integer>>> possibleBoardTemp = new ArrayList<>();
-                possibleBoardTemp = copyThreeDimensionalArrayList(possibleBoard);
-                System.out.println(possibleBoardTemp.get(row).get(column));
-                if (possibleBoardTemp.get(row).get(column).size() > 9) {
-                    System.out.println(possibleBoardTemp.get(row).get(column));
-                    System.exit(1);
-                }
-                Iterator<Integer> it = possibleBoardTemp.get(row).get(column).iterator();
-                while (it.hasNext()) {
-                    Integer possibleNum = it.next();
 
-                    updateBoardGrid(possibleNum, row, column);
-                    updatePossibleBoard(possibleNum, row, column);
-                    attemptFullSolve();
+                /**
+                 * this.possibleBoard will be kept as the original possibleBoard of the current
+                 * method. this.possibleBoard will not be modified. only workBoard.possibleBoard
+                 * will be modified. same goes for this.gameBoard and workBoard.gameBoard
+                 */
+                Iterator<Integer> it = this.possibleBoard.get(row).get(column).iterator();
+
+                while (it.hasNext()) {
 
                     /**
-                     * consider the third recursion. board is fully solved. the guessAndCheck is now
-                     * returned.
+                     * workBoard copies the original Board. Every time a new possibleNum is tried we
+                     * want to start from the original Board. This also means if an invalid board is
+                     * reached and we need to try the next one, there is no need to reset the
+                     * invalid board. The reset is done at the start. Sweet.
                      */
-                    if (boardStateIsValid()) {
-                        if (boardIsFull()) {
-                            System.out.println("HEY");
-                            counter += 1;
-                            return;
-                            // gameBoard = gameBoardTrySaveState.getLast();
-                            // possibleBoard = possibleBoardTrySaveState.getLast();
+                    workBoard.gameBoard = copyTwoDimensionalArray(this.gameBoard);
+                    workBoard.possibleBoard = copyThreeDimensionalArrayList(this.possibleBoard);
+
+                    Integer possibleNum = it.next();
+
+                    /**
+                     * any solving attempts are done on the workBoard. thisBoard is kept as the
+                     * saveState that is tied to this instance of this method in the recursion.
+                     */
+                    workBoard.updateBoardGrid(possibleNum, row, column);
+                    workBoard.updatePossibleBoard(possibleNum, row, column);
+                    workBoard.attemptFullSolve();
+
+                    /**
+                     * again, checks on Board State are tied to the workBoard. thisBoard is
+                     * unchanged
+                     */
+                    if (workBoard.boardStateIsValid()) {
+                        if (workBoard.boardIsFull()) {
+                            return workBoard.gameBoard;
                         } else {
-                            System.out.println("A recursed function has been called.");
-                            guessAndCheckSolve();
-                            System.out.println("The recursed function has been exited.");
-                            /**
-                             * we now land back here into the second recursion. if we do nothing, it
-                             * will exit the if else, and then re-enter the for loop, which we dont
-                             * want. so we need to find a way to go back to the first recursion. Of
-                             * course if it's not fully solved in the third recursion and it
-                             * reentered the first recursion, then we want it to enter the for loop
-                             * again. If it's solved, to prevent it from entering the for loop, we
-                             * need to return to escape the function.
-                             */
-                            if (boardIsFull()) {
-                                System.out.println("HEYYYY");
-                                return;
+                            Board answerBoard = new Board();
+                            System.out.println("recursion function has been called.");
+                            answerBoard.gameBoard =
+                                    copyTwoDimensionalArray(workBoard.guessAndCheckSolve());
+                            System.out.println("recursion function has been exited.");
+                            if (answerBoard.boardIsFull()) {
+                                return answerBoard.gameBoard;
                             }
-                            // gameBoard = gameBoardTrySaveState.getLast();
-                            // possibleBoard = possibleBoardTrySaveState.getLast();
-                            /**
-                             * This sends us back to the first recursion, but also back to this
-                             * point, at which it will return and the recursion will end. Also don't
-                             * have to check that it is invalid, as the only 2 ways we reach here is
-                             * one, it gets returned from a valid and full state, or two, the above
-                             * recursion finishes, at which point the gameBoard will load an earlier
-                             * state which will not be full.
-                             */
                         }
                     } else {
-                        System.out.println("An invalid state has been reached.");
-                        printBoard(gameBoard);
-                        System.out.println(rowsAreValid());
-                        System.out.println(columnsAreValid());
-                        System.out.println(boxesAreValid());
-                        System.out.println("This is the save state that was loaded");
-                        printBoard(gameBoard);
-                        System.out.println(possibleBoardTemp.get(row).get(column));
+                        System.out.println("An Invalid State has been Reached.");
+                        printBoard(workBoard.gameBoard);
+                        System.out.println(workBoard.rowsAreValid());
+                        System.out.println(workBoard.columnsAreValid());
+                        System.out.println(workBoard.boxesAreValid());
                     }
                 }
             }
         }
-        /**
-         * lets say this is the third recursion. all possibleNum has been tried in this state, and
-         * they all lead to invalid states. now we need to backtrack. we need to load a save state
-         * that is made in the second recursion. so we remove the last save state, and load the
-         * second last one. And then the function ends, so it will push it back into the second
-         * recursions's for loop and the cycle continues.
-         */
-        gameBoardTrySaveState.removeLast();
-        possibleBoardTrySaveState.removeLast();
-        possibleBoard = possibleBoardTrySaveState.getLast();
-        // try {
-        //    copyTwoDimensionalArray(gameBoardTrySaveState.getLast(), gameBoard);
-        //    copyThreeDimensionalArrayList(possibleBoardTrySaveState.getLast(), possibleBoard);
-        // } catch (NoSuchElementException e) {
-        //    System.out.println("there is an error but all's good");
-        // }
+        return new int[9][9];
     }
 
-    // -->
     // -->
 
     // checkBoardState --<
