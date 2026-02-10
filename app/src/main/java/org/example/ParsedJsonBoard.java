@@ -1,6 +1,6 @@
 package org.example;
 
-public class ParsedBoard {
+public class ParsedJsonBoard {
     NewBoard newboard = new NewBoard();
 }
 

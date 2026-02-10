@@ -1,48 +1,176 @@
 package org.example;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
 class Board {
     // variables --<
-    int[][] gameBoard;
-    ArrayList<int[][]> gameBoardTrySaveState = new ArrayList<int[][]>();
-    int[][] solution;
+    int[][] gameBoard = new int[9][9];
+    ArrayList<int[][]> gameBoardTrySaveState = new ArrayList<>();
+    int[][] solution = new int[9][9];
     ArrayList<ArrayList<ArrayList<Integer>>> possibleBoard = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> possibleBoardTrySaveState =
             new ArrayList<>();
     HashMap<Integer, Integer> numCounter = new HashMap<>();
-    final int empty = 0;
-    final int rowLength = 41;
+    final int EMPTY = 0;
+    final int ROWLENGTH = 41;
     int counter = 0;
+
+    ArrayList<Board> storeBoards = new ArrayList<>();
+    String csvGameBoard;
+    String csvSolution;
+    String csvDifficulty;
 
     // -->
 
+    // csvCreateSortedCsv --<
+    void csvReadFile(String fileName) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] csvBoardInfo = line.split(",");
+                storeBoards.add(new Board());
+                storeBoards.getLast().csvGameBoard = csvBoardInfo[1];
+                storeBoards.getLast().csvSolution = csvBoardInfo[2];
+                storeBoards.getLast().csvDifficulty = csvBoardInfo[3];
+            }
+            storeBoards.removeFirst();
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+        }
+    }
+
+    void csvSortStoreBoards() {
+        Collections.sort(
+                storeBoards,
+                (obj1, obj2) -> {
+                    Board board1 = (Board) obj1;
+                    Board board2 = (Board) obj2;
+                    int boardDifficulty1;
+                    int boardDifficulty2;
+                    try {
+                        boardDifficulty1 = Integer.parseInt(board1.csvDifficulty);
+                        boardDifficulty2 = Integer.parseInt(board2.csvDifficulty);
+                    } catch (NumberFormatException e) {
+                        boardDifficulty1 = 0;
+                        boardDifficulty2 = 0;
+                    }
+                    return boardDifficulty1 - boardDifficulty2;
+                });
+    }
+
+    void csvCreateFile() {
+        try {
+            File file = new File("sortedBoards.csv");
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    void csvWriteSortedBoard() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("sortedBoards.csv"))) {
+            for (int i = 0; i < 20; i++) {
+                bw.write(
+                        storeBoards.get(i).csvGameBoard
+                                + ","
+                                + storeBoards.get(i).csvSolution
+                                + ","
+                                + storeBoards.get(i).csvDifficulty);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing file.");
+        }
+    }
+
+    void csvCreateSortedCsv() {
+        csvReadFile("test.csv");
+        csvSortStoreBoards();
+        csvCreateFile();
+        csvWriteSortedBoard();
+    }
+
+    // -->
+
+    void csvParseBoard(String fileName) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] csvBoardInfo = line.split(",");
+                storeBoards.add(new Board());
+                for (int i = 0; i < 81; i++) {
+                    int row = i / 9;
+                    int column = i % 9;
+                    if (csvBoardInfo[0].charAt(i) == '.') {
+                        storeBoards.getLast().gameBoard[row][column] = 0;
+                    } else {
+                        storeBoards.getLast().gameBoard[row][column] =
+                                Integer.parseInt(Character.toString(csvBoardInfo[0].charAt(i)));
+                    }
+                    storeBoards.getLast().solution[row][column] =
+                            Integer.parseInt(Character.toString(csvBoardInfo[1].charAt(i)));
+                }
+                storeBoards.getLast().csvDifficulty = csvBoardInfo[2];
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+        }
+    }
+
     void solve() { // --<
         // init solve
-        System.out.println("This is the initial board.");
-        printBoard(gameBoard);
+        // System.out.println("This is the initial board.");
+        // printBoard(gameBoard);
         initPossibleBoard();
         firstRoundSolve();
 
         // iterative solve
         attemptFullSolve();
-        printBoard(gameBoard);
 
         // guessAndCheckSolve
-        gameBoard = guessAndCheckSolve();
         if (boardIsFull() == false) {
-            System.out.println("Board is not solvable.");
+            System.out.println("Guess and Check has been called.");
+            gameBoard = guessAndCheckSolve();
+            if (boardIsFull() == false) {
+                System.out.println("Board is not solvable.");
+            }
         }
 
-        System.out.println("This is the final board.");
+        System.out.println("Difficulty: " + csvDifficulty);
         printBoard(gameBoard);
         // System.out.println("There are " + counter + " possible solutions.");
         System.out.println(rowsAreValid());
         System.out.println(columnsAreValid());
         System.out.println(boxesAreValid());
+        boolean r = Arrays.deepEquals(gameBoard, solution);
+        if (r == true) {
+            System.out.println("Board was solved.");
+        } else {
+            System.out.println("Board failed to solve.");
+        }
+    }
+
+    void solveStoreBoards() {
+        for (int num = 0; num < 9; num++) {
+            System.out.println("Board: " + num);
+            storeBoards.get(num).solve();
+            System.out.println("========================================================");
+        }
     }
 
     // -->
@@ -116,23 +244,19 @@ class Board {
                      */
                     if (workBoard.boardStateIsValid()) {
                         if (workBoard.boardIsFull()) {
+                            // System.out.println("Solver reached solve state.");
                             return workBoard.gameBoard;
                         } else {
                             Board answerBoard = new Board();
-                            System.out.println("recursion function has been called.");
+                            // System.out.println("Recursion entered.");
                             answerBoard.gameBoard =
                                     copyTwoDimensionalArray(workBoard.guessAndCheckSolve());
-                            System.out.println("recursion function has been exited.");
+                            // System.out.println("Recursion exited.");
                             if (answerBoard.boardIsFull()) {
                                 return answerBoard.gameBoard;
                             }
                         }
                     } else {
-                        System.out.println("An Invalid State has been Reached.");
-                        printBoard(workBoard.gameBoard);
-                        System.out.println(workBoard.rowsAreValid());
-                        System.out.println(workBoard.columnsAreValid());
-                        System.out.println(workBoard.boxesAreValid());
                     }
                 }
             }
@@ -537,7 +661,7 @@ class Board {
             for (int column = 0; column < 9; column++) {
                 possibleBoard.get(row).add(new ArrayList<>());
                 int square = gameBoard[row][column];
-                if (square == empty) {
+                if (square == EMPTY) {
                     for (int possibleNum = 1; possibleNum <= 9; possibleNum++) {
                         possibleBoard.get(row).get(column).add(possibleNum);
                     }
@@ -552,7 +676,7 @@ class Board {
     void printHorizontalBorder(String borderType, String part) { // --<
         switch (part) {
             case "body":
-                for (int i = 1; i <= rowLength; i++) {
+                for (int i = 1; i <= ROWLENGTH; i++) {
                     if (i == 6 || i == 10 || i == 14 || i == 15 || i == 19 || i == 23 || i == 27
                             || i == 28 || i == 32 || i == 36) {
                         System.out.print("+");
@@ -562,7 +686,7 @@ class Board {
                 }
                 break;
             case "edge":
-                for (int i = 1; i <= rowLength; i++) {
+                for (int i = 1; i <= ROWLENGTH; i++) {
                     System.out.print(borderType);
                 }
                 break;
@@ -572,7 +696,7 @@ class Board {
     // -->
 
     void printBoardLine(int square, String borderType) { // --<
-        if (square == empty) {
+        if (square == EMPTY) {
             System.out.print(" " + " " + " " + borderType);
         } else {
             System.out.print(" " + square + " " + borderType);

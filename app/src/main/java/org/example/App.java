@@ -1,30 +1,59 @@
 package org.example;
 
-import java.util.Arrays;
-
 public class App {
-    void solve(String FileName) { // --<
-        FileUtils parser = new FileUtils();
+    void solve() { // --<
         Board board = new Board();
-        parser.parseBoard(FileName);
-        board.gameBoard = parser.getGameBoard();
-        board.solution = parser.getSolution();
-        board.solve();
-        boolean r = Arrays.deepEquals(board.gameBoard, board.solution);
-        if (r == true) {
-            System.out.println(FileName + " was solved.");
-        } else {
-            System.out.println(FileName + " failed to solve.");
-        }
+        board.csvParseBoard("sortedBoards.csv");
+        // board.storeBoards.get(0).printBoard(board.storeBoards.get(0).gameBoard);
+        board.solveStoreBoards();
+        // board.storeBoards.get(1).solve();
     }
 
     // -->
 
     public static void main(String[] args) {
         App app = new App();
-        app.solve("Board6.json");
+        app.solve();
+        // Board board = new Board();
+        // board.csvCreateSortedCsv();
 
         // Tests:
+        // File file = new File("test.csv");
+        // System.out.println(file.exists());
+        //
+        // ArrayList<Hello> x = new ArrayList<>();
+        // String[] y = {"2", "1", "3"};
+        // for (String num : y) {
+        //    x.add(new Hello());
+        //    x.getLast().myString[0] = num;
+        // }
+        // for (Hello item : x) {
+        //    System.out.println(item.myString[0]);
+        // }
+        // Collections.sort(
+        //        x,
+        //        (hello1, hello2) -> {
+        //            Hello a = (Hello) hello1;
+        //            Hello b = (Hello) hello2;
+        //            int aNum;
+        //            int bNum;
+        //            try {
+        //                aNum = Integer.parseInt(a.myString[0]);
+        //                bNum = Integer.parseInt(b.myString[0]);
+        //            } catch (NumberFormatException e) {
+        //                aNum = 0;
+        //                bNum = 0;
+        //            }
+        //            return bNum - aNum;
+        //        });
+        // System.out.println();
+
+        // for (Hello item : x) {
+        //    System.out.println(item.myString[0]);
+        // }
+        //
+        //
+        //
         //
         // Hello hello = new Hello();
         // hello.y = hello.increase();
@@ -106,6 +135,7 @@ public class App {
 class Hello { // --<
     int x;
     int[][] y = {{1}};
+    String[] myString = new String[1];
 
     void decrease() {
         Hello newHello = new Hello();

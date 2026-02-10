@@ -38,7 +38,7 @@ public class FileUtils {
     // --<
     void jsonParser(String jsonString) {
         Gson gson = new Gson();
-        ParsedBoard parsedBoard = gson.fromJson(jsonString, ParsedBoard.class);
+        ParsedJsonBoard parsedBoard = gson.fromJson(jsonString, ParsedJsonBoard.class);
         gameBoard = parsedBoard.newboard.grids[0].value;
         solution = parsedBoard.newboard.grids[0].solution;
     }
