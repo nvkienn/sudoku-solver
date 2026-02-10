@@ -3,7 +3,6 @@ package org.example;
 public class App {
     void solve() { // --<
         Board board = new Board();
-        board.csvParseBoard("sortedBoards.csv");
         // board.storeBoards.get(0).printBoard(board.storeBoards.get(0).gameBoard);
         board.solveStoreBoards();
         // board.storeBoards.get(1).solve();
@@ -14,10 +13,13 @@ public class App {
     public static void main(String[] args) {
         App app = new App();
         app.solve();
+
         // Board board = new Board();
         // board.csvCreateSortedCsv();
 
         // Tests:
+        int x = 300;
+        System.out.println(Integer.toBinaryString(x));
         // File file = new File("test.csv");
         // System.out.println(file.exists());
         //
