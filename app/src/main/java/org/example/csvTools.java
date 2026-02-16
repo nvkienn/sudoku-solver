@@ -30,23 +30,43 @@ class csvTools {
         }
     }
 
-    void csvSortStoreBoards() {
-        Collections.sort(
-                storeBoards,
-                (obj1, obj2) -> {
-                    Board board1 = (Board) obj1;
-                    Board board2 = (Board) obj2;
-                    int boardDifficulty1;
-                    int boardDifficulty2;
-                    try {
-                        boardDifficulty1 = Integer.parseInt(board1.csvDifficulty);
-                        boardDifficulty2 = Integer.parseInt(board2.csvDifficulty);
-                    } catch (NumberFormatException e) {
-                        boardDifficulty1 = 0;
-                        boardDifficulty2 = 0;
-                    }
-                    return boardDifficulty1 - boardDifficulty2;
-                });
+    void csvSortStoreBoardsAsc(boolean asc) {
+        if (asc == true) {
+            Collections.sort(
+                    storeBoards,
+                    (obj1, obj2) -> {
+                        Board board1 = (Board) obj1;
+                        Board board2 = (Board) obj2;
+                        int boardDifficulty1;
+                        int boardDifficulty2;
+                        try {
+                            boardDifficulty1 = Integer.parseInt(board1.csvDifficulty);
+                            boardDifficulty2 = Integer.parseInt(board2.csvDifficulty);
+                        } catch (NumberFormatException e) {
+                            boardDifficulty1 = 0;
+                            boardDifficulty2 = 0;
+                        }
+                        return boardDifficulty1 - boardDifficulty2;
+                    });
+
+        } else {
+            Collections.sort(
+                    storeBoards,
+                    (obj1, obj2) -> {
+                        Board board1 = (Board) obj1;
+                        Board board2 = (Board) obj2;
+                        int boardDifficulty1;
+                        int boardDifficulty2;
+                        try {
+                            boardDifficulty1 = Integer.parseInt(board1.csvDifficulty);
+                            boardDifficulty2 = Integer.parseInt(board2.csvDifficulty);
+                        } catch (NumberFormatException e) {
+                            boardDifficulty1 = 0;
+                            boardDifficulty2 = 0;
+                        }
+                        return boardDifficulty2 - boardDifficulty1;
+                    });
+        }
     }
 
     void csvCreateFile() {
@@ -79,9 +99,9 @@ class csvTools {
         }
     }
 
-    void csvCreateSortedCsv() {
+    void csvCreateSortedCsv(boolean asc) {
         csvReadFile("test.csv");
-        csvSortStoreBoards();
+        csvSortStoreBoardsAsc(asc);
         csvCreateFile();
         csvWriteSortedBoard();
     }
