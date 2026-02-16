@@ -1,25 +1,37 @@
 package org.example;
 
 public class App {
-    void solve() { // --<
-        Board board = new Board();
+    static void solve(Board board) { // --<
+        // Board board = new Board();
         // board.storeBoards.get(0).printBoard(board.storeBoards.get(0).gameBoard);
-        board.solveStoreBoards();
+        // board.solveStoreBoards();
         // board.storeBoards.get(1).solve();
     }
 
     // -->
 
     public static void main(String[] args) {
-        App app = new App();
-        app.solve();
+        Board board = new Board();
+        // board.main();
+        int x = 0b0001000;
+        int y = 0b0011110;
+        System.out.println(Integer.toBinaryString(x));
+        System.out.println(Integer.toBinaryString(~x));
+        System.out.println(Integer.toBinaryString(y & ~x));
+
+        //	App app = new App();
+        //	app.solve();
 
         // Board board = new Board();
         // board.csvCreateSortedCsv();
 
         // Tests:
-        int x = 300;
-        System.out.println(Integer.toBinaryString(x));
+        // short x = 0b1 << 5;
+        // System.out.println(x);
+        // System.out.println(Integer.toBinaryString(x));
+        // System.out.println(Short.MIN_VALUE);
+        // System.out.println(Integer.toBinaryString(0xFFFF));
+        // System.out.println(0xFF);
         // File file = new File("test.csv");
         // System.out.println(file.exists());
         //
