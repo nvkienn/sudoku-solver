@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
-class Board {
+class bakBoard {
     // variables --<
     int[][] gameBoard = new int[9][9];
     ArrayList<int[][]> gameBoardTrySaveState = new ArrayList<>();
@@ -25,7 +25,7 @@ class Board {
     final int ROWLENGTH = 41;
     int counter = 0;
 
-    ArrayList<Board> storeBoards = new ArrayList<>();
+    ArrayList<bakBoard> storeBoards = new ArrayList<>();
     String csvGameBoard;
     String csvSolution;
     String csvDifficulty;
@@ -38,7 +38,7 @@ class Board {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] csvBoardInfo = line.split(",");
-                storeBoards.add(new Board());
+                storeBoards.add(new bakBoard());
                 storeBoards.getLast().csvGameBoard = csvBoardInfo[1];
                 storeBoards.getLast().csvSolution = csvBoardInfo[2];
                 storeBoards.getLast().csvDifficulty = csvBoardInfo[3];
@@ -53,8 +53,8 @@ class Board {
         Collections.sort(
                 storeBoards,
                 (obj1, obj2) -> {
-                    Board board1 = (Board) obj1;
-                    Board board2 = (Board) obj2;
+                    bakBoard board1 = (bakBoard) obj1;
+                    bakBoard board2 = (bakBoard) obj2;
                     int boardDifficulty1;
                     int boardDifficulty2;
                     try {
@@ -112,7 +112,7 @@ class Board {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] csvBoardInfo = line.split(",");
-                storeBoards.add(new Board());
+                storeBoards.add(new bakBoard());
                 for (int i = 0; i < 81; i++) {
                     int row = i / 9;
                     int column = i % 9;
@@ -147,7 +147,7 @@ class Board {
             System.out.println("Guess and Check has been called.");
             gameBoard = guessAndCheckSolve();
             if (boardIsFull() == false) {
-                System.out.println("Board is not solvable.");
+                System.out.println("bakBoard is not solvable.");
             }
         }
 
@@ -159,16 +159,16 @@ class Board {
         System.out.println(boxesAreValid());
         boolean r = Arrays.deepEquals(gameBoard, solution);
         if (r == true) {
-            System.out.println("Board was solved.");
+            System.out.println("bakBoard was solved.");
         } else {
-            System.out.println("Board failed to solve.");
+            System.out.println("bakBoard failed to solve.");
         }
     }
 
     void solveStoreBoards() {
         for (int num = 0; num < 1; num++) {
             int x = 19;
-            System.out.println("Board: " + x);
+            System.out.println("bakBoard: " + x);
             storeBoards.get(x).solve();
             System.out.println("========================================================");
         }
@@ -203,9 +203,10 @@ class Board {
     int[][] guessAndCheckSolve() { // --<
         //
         /**
-         * workBoard is the instance of Board that we will be doing all of our solving attempts on
+         * workBoard is the instance of bakBoard that we will be doing all of our solving attempts
+         * on
          */
-        Board workBoard = new Board();
+        bakBoard workBoard = new bakBoard();
 
         /** finding the first possibleNum to try */
         for (int row = 0; row < 9; row++) {
@@ -221,10 +222,10 @@ class Board {
                 while (it.hasNext()) {
 
                     /**
-                     * workBoard copies the original Board. Every time a new possibleNum is tried we
-                     * want to start from the original Board. This also means if an invalid board is
-                     * reached and we need to try the next one, there is no need to reset the
-                     * invalid board. The reset is done at the start. Sweet.
+                     * workBoard copies the original bakBoard. Every time a new possibleNum is tried
+                     * we want to start from the original bakBoard. This also means if an invalid
+                     * board is reached and we need to try the next one, there is no need to reset
+                     * the invalid board. The reset is done at the start. Sweet.
                      */
                     workBoard.gameBoard = copyTwoDimensionalArray(this.gameBoard);
                     workBoard.possibleBoard = copyThreeDimensionalArrayList(this.possibleBoard);
@@ -240,7 +241,7 @@ class Board {
                     workBoard.attemptFullSolve();
 
                     /**
-                     * again, checks on Board State are tied to the workBoard. thisBoard is
+                     * again, checks on bakBoard State are tied to the workBoard. thisBoard is
                      * unchanged
                      */
                     if (workBoard.boardStateIsValid()) {
@@ -248,7 +249,7 @@ class Board {
                             // System.out.println("Solver reached solve state.");
                             return workBoard.gameBoard;
                         } else {
-                            Board answerBoard = new Board();
+                            bakBoard answerBoard = new bakBoard();
                             // System.out.println("Recursion entered.");
                             System.out.println("Recursion entered.");
                             answerBoard.gameBoard =
@@ -446,6 +447,7 @@ class Board {
 
     void checkIfSquareIsSolved(int row, int column) { // --<
         if (possibleBoard.get(row).get(column).size() == 1) {
+
             int num = possibleBoard.get(row).get(column).getFirst();
             updateBoardGrid(num, row, column);
             updatePossibleBoard(num, row, column);

@@ -12,8 +12,8 @@ public class App {
 
     public static void main(String[] args) {
         Board board = new Board();
-        Generator g = new Generator();
-        g.writeGroups();
+        GeneratorGroups g = new GeneratorGroups();
+        g.main();
         // board.main();
 
         //	App app = new App();
