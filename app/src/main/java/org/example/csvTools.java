@@ -2,7 +2,6 @@ package org.example;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -69,20 +68,6 @@ class csvTools {
         }
     }
 
-    void csvCreateFile() {
-        try {
-            File file = new File("sortedBoards.csv");
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-            } else {
-                System.out.println("File already exists.");
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-    }
-
     void csvWriteSortedBoard() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("sortedBoards.csv"))) {
             for (int i = 0; i < 20; i++) {
@@ -102,7 +87,6 @@ class csvTools {
     void csvCreateSortedCsv(boolean asc) {
         csvReadFile("test.csv");
         csvSortStoreBoardsAsc(asc);
-        csvCreateFile();
         csvWriteSortedBoard();
     }
 

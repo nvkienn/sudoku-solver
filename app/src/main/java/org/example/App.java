@@ -12,12 +12,9 @@ public class App {
 
     public static void main(String[] args) {
         Board board = new Board();
+        Generator g = new Generator();
+        g.writeGroups();
         // board.main();
-        int x = 0b0001000;
-        int y = 0b0011110;
-        System.out.println(Integer.toBinaryString(x));
-        System.out.println(Integer.toBinaryString(~x));
-        System.out.println(Integer.toBinaryString(y & ~x));
 
         //	App app = new App();
         //	app.solve();
