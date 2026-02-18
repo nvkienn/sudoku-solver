@@ -132,11 +132,13 @@ class Board {
 
     void hiddenSingles() {
         for (int[] group : Groups.groups) {
-            for (int i = 0; i < 9; i++) {
+            for (int i = 1; i <= 9; i++) {
                 int counter = 0;
 
                 groupLoop:
                 for (int index : group) {
+                    // note that if solved with a diff number, it would not contain i anyways and
+                    // will move on to the next index in the group
                     if (board[index].contains(i)) {
                         if (board[index].isSolved()) {
                             // if already solved, move on to next number
@@ -161,6 +163,59 @@ class Board {
             }
         }
     }
+
+    void hiddenPairs() {
+        for (int[] group : Groups.groups) {
+            for (int i = 1; i <= 9; i++) {
+                for (int j = i + 1; j <= 9; j++) {
+                    int counter = 0;
+                    boolean error = false;
+
+                    groupLoop:
+                    for (int index : group) {
+                        if (board[index].isSolved()) {
+                            if (board[index].contains(i)) {
+                                break groupLoop;
+                            } else if (board[index].contains(j)) {
+                                break groupLoop;
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (board[index].contains(i) && board[index].contains(j) == false) {
+                            error = true;
+                            break groupLoop;
+                        }
+                        if (board[index].contains(i) == false && board[index].contains(j)) {
+                            error = true;
+                            break groupLoop;
+                        }
+                        if (board[index].contains(i) && board[index].contains(j)) {
+                            counter += 1;
+                            if (counter > 2) {
+                                break groupLoop;
+                            }
+                        }
+                    }
+
+                    if (counter == 2 && error == false) {
+                        for (int index : group) {
+                            counter = 0;
+                            if (board[index].contains(i)) {
+                                board[index].set(Tools.generatePairBin(i, j), false);
+                                counter += 1;
+                                if (counter == 2) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void obviousPairs() {}
 
     boolean isValid() {
         return true;

@@ -11,6 +11,14 @@ class Cell {
         this.data = Tools.numToBin(num);
     }
 
+    void set(int num, boolean integer) {
+        if (integer == true) {
+            this.data = Tools.numToBin(num);
+        } else {
+            this.data = num;
+        }
+    }
+
     int get() {
         return Tools.binToNum(data);
     }
@@ -28,6 +36,11 @@ class Cell {
     boolean contains(int num) {
         int testBin = Tools.numToBin(num);
         boolean result = (testBin & this.data) > 0 ? true : false;
+        return result;
+    }
+
+    boolean sizeGreaterOrEqualTo(int num) {
+        boolean result = Integer.bitCount(this.data) >= num ? true : false;
         return result;
     }
 

@@ -23,4 +23,8 @@ class Tools {
     static int binToNum(int bin) {
         return binToNum.get(bin);
     }
+
+    static int generatePairBin(int num1, int num2) {
+        return numToBin(num1) | numToBin(num2);
+    }
 }
