@@ -12,7 +12,7 @@ public class App {
 
     public static void main(String[] args) {
         Board board = new Board();
-        GeneratorGroups g = new GeneratorGroups();
+        GeneratorOfGroups g = new GeneratorOfGroups();
         g.main();
         // board.main();
 
