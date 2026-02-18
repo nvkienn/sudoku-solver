@@ -8,20 +8,26 @@ class Cell {
     }
 
     void set(int num) {
-        this.data = Tools.numToCell(num);
+        this.data = Tools.numToBin(num);
     }
 
     int get() {
-        return Tools.cellToNum(data);
+        return Tools.binToNum(data);
     }
 
     boolean isSolved() {
-        boolean result = (Integer.bitCount(data) == 1) ? true : false;
+        boolean result = Integer.bitCount(data) == 1 ? true : false;
         return result;
     }
 
     boolean isNotSolved() {
-        boolean result = (Integer.bitCount(data) == 1) ? false : true;
+        boolean result = Integer.bitCount(data) == 1 ? false : true;
+        return result;
+    }
+
+    boolean contains(int num) {
+        int testBin = Tools.numToBin(num);
+        boolean result = (testBin & this.data) > 0 ? true : false;
         return result;
     }
 

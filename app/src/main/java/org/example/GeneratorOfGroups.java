@@ -163,6 +163,14 @@ class GeneratorOfGroups {
         bw.newLine();
     }
 
+    void writeGetRelatedMethod(BufferedWriter bw) throws IOException {
+        bw.write("static int[] getRelated(int index){");
+        bw.newLine();
+        bw.write("return relations[index];");
+        bw.newLine();
+        bw.write("}");
+    }
+
     void main() {
         try (BufferedWriter bw =
                 new BufferedWriter(
@@ -180,6 +188,7 @@ class GeneratorOfGroups {
             writeColumnsAttr(bw);
             writeBoxesAttr(bw);
             writeRelations(bw);
+            writeGetRelatedMethod(bw);
 
             bw.write("}");
         } catch (IOException e) {

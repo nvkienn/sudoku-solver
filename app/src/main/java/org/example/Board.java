@@ -111,6 +111,61 @@ class Board {
     // -->
     // -->
 
+    void updateNotes(int currIndex) {
+        for (int index : Groups.getRelated(currIndex)) {
+            if (board[index].isNotSolved()) {
+                board[index].remove(board[currIndex]);
+                if (board[index].isSolved()) {
+                    updateNotes(index);
+                }
+            }
+        }
+    }
+
+    void initNotes() {
+        for (int i = 0; i < 81; i++) {
+            if (board[i].isSolved()) {
+                updateNotes(i);
+            }
+        }
+    }
+
+    void hiddenSingles() {
+        for (int[] group : Groups.groups) {
+            for (int i = 0; i < 9; i++) {
+                int counter = 0;
+
+                groupLoop:
+                for (int index : group) {
+                    if (board[index].contains(i)) {
+                        if (board[index].isSolved()) {
+                            // if already solved, move on to next number
+                            break groupLoop;
+                        }
+                        counter += 1;
+                        if (counter > 1) {
+                            break groupLoop;
+                        }
+                    }
+                }
+
+                if (counter == 1) {
+                    for (int index : group) {
+                        if (board[index].contains(i)) {
+                            board[index].set(i);
+                            updateNotes(index);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    boolean isValid() {
+        return true;
+    }
+
     void main() {
         csvParseBoard("sortedBoards.csv");
         for (Board obj : storeBoards) {
