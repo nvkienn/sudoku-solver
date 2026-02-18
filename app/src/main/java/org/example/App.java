@@ -14,6 +14,10 @@ public class App {
         Board board = new Board();
         GeneratorOfGroups g = new GeneratorOfGroups();
         g.main();
+        // String x = "";
+        // x += (5 + "hello");
+        // x = x.substring(0, x.length() - 1);
+        // System.out.println(x);
         // board.main();
 
         //	App app = new App();

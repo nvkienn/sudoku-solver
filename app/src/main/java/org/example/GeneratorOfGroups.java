@@ -3,6 +3,9 @@ package org.example;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 class GeneratorOfGroups {
     void writeRows(BufferedWriter bw) throws IOException {
@@ -96,13 +99,76 @@ class GeneratorOfGroups {
         bw.newLine();
     }
 
+    ArrayList<ArrayList<Integer>> generateBoxesArr() {
+        ArrayList<ArrayList<Integer>> boxesArr = new ArrayList<>();
+        for (int[] box : Groups.boxes) {
+            boxesArr.add(new ArrayList<>());
+            for (int index : box) {
+                boxesArr.getLast().add(index);
+            }
+        }
+        return boxesArr;
+    }
+
+    ArrayList<ArrayList<Integer>> generateRelations() {
+        ArrayList<ArrayList<Integer>> boxesArr = generateBoxesArr();
+        ArrayList<HashSet<Integer>> relationsArr = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> relationsArrSorted = new ArrayList<>();
+
+        // adding into relationsArr
+        for (int i = 0; i < 81; i++) {
+            relationsArr.add(new HashSet<>());
+            for (int index : Groups.rows[i / 9]) {
+                relationsArr.getLast().add(index);
+            }
+            for (int index : Groups.columns[i % 9]) {
+                relationsArr.getLast().add(index);
+            }
+            for (ArrayList<Integer> box : boxesArr) {
+                if (box.contains(i)) {
+                    for (int index : box) {
+                        relationsArr.getLast().add(index);
+                    }
+                    break;
+                }
+            }
+            relationsArr.getLast().remove(i);
+        }
+        for (HashSet<Integer> list : relationsArr) {
+            relationsArrSorted.add(new ArrayList<>());
+            for (int index : list) {
+                relationsArrSorted.getLast().add(index);
+            }
+            Collections.sort(relationsArrSorted.getLast());
+        }
+        return relationsArrSorted;
+    }
+
+    void writeRelations(BufferedWriter bw) throws IOException {
+        bw.write("final static int[][] relations = {");
+        bw.newLine();
+        ArrayList<ArrayList<Integer>> relationsArr = generateRelations();
+        for (ArrayList<Integer> list : relationsArr) {
+            String line = new String();
+            line += "{";
+            for (int index : list) {
+                line += (index + ",");
+            }
+            line = line.substring(0, line.length() - 1);
+            line += "},";
+            bw.write(line);
+            bw.newLine();
+        }
+        bw.write("};");
+        bw.newLine();
+    }
+
     void main() {
         try (BufferedWriter bw =
                 new BufferedWriter(
                         new FileWriter(
                                 System.getProperty("user.dir")
-                                        + "/src/main/java/org/example/Groups.java",
-                                true))) {
+                                        + "/src/main/java/org/example/Groups.java"))) {
             bw.write("package org.example;");
             bw.newLine();
             bw.write("class Groups {");
@@ -113,6 +179,7 @@ class GeneratorOfGroups {
             writeRowsAttr(bw);
             writeColumnsAttr(bw);
             writeBoxesAttr(bw);
+            writeRelations(bw);
 
             bw.write("}");
         } catch (IOException e) {
