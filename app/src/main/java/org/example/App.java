@@ -1,19 +1,13 @@
 package org.example;
 
 public class App {
-    static void solve(Board board) { // --<
-        // Board board = new Board();
-        // board.storeBoards.get(0).printBoard(board.storeBoards.get(0).gameBoard);
-        // board.solveStoreBoards();
-        // board.storeBoards.get(1).solve();
-    }
-
-    // -->
-
     public static void main(String[] args) {
+
         Board board = new Board();
-        GeneratorOfGroups g = new GeneratorOfGroups();
-        g.main();
+        board.main();
+
+        // csvTools csv = new csvTools();
+        // csv.csvCreateSortedCsv(false);
         // String x = "";
         // x += (5 + "hello");
         // x = x.substring(0, x.length() - 1);
@@ -27,7 +21,6 @@ public class App {
         // board.csvCreateSortedCsv();
 
         // Tests:
-        //
         // for (int i = 1; i <= 9; i++) {
         //    for (int j = i + 1; j <= 9; j++) {
         //        System.out.println(i + "," + j);

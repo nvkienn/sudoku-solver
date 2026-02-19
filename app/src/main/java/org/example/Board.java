@@ -15,6 +15,8 @@ class Board {
     String csvSolution;
     String csvDifficulty;
 
+    ArrayList<Board> queue = new ArrayList<>();
+
     final int ROWLENGTH = 41;
 
     // -->
@@ -44,6 +46,30 @@ class Board {
                             .set(Integer.parseInt(Character.toString(csvBoardInfo[1].charAt(i))));
                 }
                 storeBoards.getLast().csvDifficulty = csvBoardInfo[2];
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+        }
+    }
+
+    // -->
+
+    void csvParseBoardCustom(String fileName) { // --<
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                storeBoards.add(new Board());
+                for (int i = 0; i < 81; i++) {
+                    storeBoards.getLast().board[i] = new Cell();
+                    if (line.charAt(i) == '.') {
+                        storeBoards.getLast().board[i].init();
+                    } else {
+                        storeBoards
+                                .getLast()
+                                .board[i]
+                                .set(Integer.parseInt(Character.toString(line.charAt(i))));
+                    }
+                }
             }
         } catch (IOException e) {
             System.out.println("Error reading file.");
@@ -215,16 +241,252 @@ class Board {
         }
     }
 
-    void obviousPairs() {}
+    void obviousPairs() {
+        for (int[] group : Groups.groups) {
+            for (int i = 1; i <= 9; i++) {
+                for (int j = i + 1; j <= 9; j++) {
+                    int counter = 0;
+                    int index1 = -1;
+                    int index2 = -1;
 
-    boolean isValid() {
+                    groupLoop:
+                    for (int index : group) {
+                        if (board[index].isSolved()) {
+                            if (board[index].get() == i || board[index].get() == j) {
+                                break groupLoop;
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (board[index].contains(i)
+                                && board[index].contains(j)
+                                && board[index].size() == 2) {
+                            counter += 1;
+                            if (counter == 1) {
+                                index1 = index;
+                            } else if (counter == 2) {
+                                index2 = index;
+                                break groupLoop;
+                            }
+                        }
+                    }
+
+                    if (counter == 2) {
+                        for (int index : group) {
+                            if (index == index1 || index == index2) {
+                                continue;
+                            } else if (board[index].contains(i) || board[index].contains(j)) {
+                                board[index].remove(Tools.generatePairBin(i, j));
+                                if (board[index].isSolved()) {
+                                    updateNotes(index);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void pointingPairs() {
+        for (int[] box : Groups.groups) {
+            for (int i = 1; i <= 9; i++) {
+                int counter = 0;
+                int index1 = -1;
+                int index2 = -1;
+                int index3 = -1;
+
+                boxLoop:
+                for (int index : box) {
+                    if (board[index].isSolved()) {
+                        if (board[index].get() == i) {
+                            break boxLoop;
+                        }
+                        continue;
+                    }
+                    if (board[index].contains(i)) {
+                        counter += 1;
+                        switch (counter) {
+                            case 1:
+                                index1 = index;
+                                break;
+                            case 2:
+                                index2 = index;
+                                break;
+                            case 3:
+                                index3 = index;
+                                break;
+                            case 4:
+                                break boxLoop;
+                        }
+                    }
+                }
+                if (counter == 2) {
+                    if (Tools.isSameRow(index1, index2)) {
+                        for (int index : Groups.rows[Tools.getRow(index1)]) {
+                            if (index == index1 || index == index2) {
+                                continue;
+                            }
+                            if (board[index].contains(i)) {
+                                board[index].remove(Tools.numToBin(i));
+                                if (board[index].isSolved()) {
+                                    updateNotes(index);
+                                }
+                            }
+                        }
+                    } else if (Tools.isSameColumn(index1, index2)) {
+                        for (int index : Groups.columns[Tools.getColumn(index1)]) {
+                            if (index == index1 || index == index2) {
+                                continue;
+                            }
+                            if (board[index].contains(i)) {
+                                board[index].remove(Tools.numToBin(i));
+                                if (board[index].isSolved()) {
+                                    updateNotes(index);
+                                }
+                            }
+                        }
+                    }
+
+                } else if (counter == 3) {
+                    if (Tools.isSameRow(index1, index2, index3)) {
+                        for (int index : Groups.rows[Tools.getRow(index1)]) {
+                            if (index == index1 || index == index2 || index == index3) {
+                                continue;
+                            }
+                            if (board[index].contains(i)) {
+                                board[index].remove(Tools.numToBin(i));
+                                if (board[index].isSolved()) {
+                                    updateNotes(index);
+                                }
+                            }
+                        }
+                    } else if (Tools.isSameColumn(index1, index2, index3)) {
+                        for (int index : Groups.columns[Tools.getColumn(index1)]) {
+                            if (index == index1 || index == index2 || index == index3) {
+                                continue;
+                            }
+                            if (board[index].contains(i)) {
+                                board[index].remove(Tools.numToBin(i));
+                                if (board[index].isSolved()) {
+                                    updateNotes(index);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void applyRules() {
+        Board copyBoard = new Board();
+        do {
+            copyBoard.board = Tools.copyBoard(this.board);
+            this.hiddenSingles();
+            this.obviousPairs();
+            this.hiddenPairs();
+            this.pointingPairs();
+        } while (Tools.isEqual(copyBoard.board, this.board) == false);
+    }
+
+    boolean isValid() { // --<
+        for (int[] group : Groups.groups) {
+            for (int i = 1; i <= 9; i++) {
+                int counter = 0;
+                for (int index : group) {
+                    if (board[index].isSolved()) {
+                        if (board[index].get() == i) {
+                            counter += 1;
+                            if (counter > 1) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return true;
     }
 
+    // -->
+
+    boolean isFull() {
+        for (Cell cell : board) {
+            if (cell.isNotSolved()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    int findLeastNotesIndex() {
+        int index = 0;
+        int size = 9;
+        for (int i = 0; i < 81; i++) {
+            if (board[i].isSolved()) {
+                continue;
+            }
+            if (board[i].size() == 2) {
+                return i;
+            }
+            if (board[i].size() < size) {
+                index = i;
+                size = board[i].size();
+            }
+        }
+        return index;
+    }
+
+    void guessSolve() {
+        queue.add(new Board());
+        queue.getFirst().board = Tools.copyBoard(board);
+        do {
+            int index = queue.getFirst().findLeastNotesIndex();
+            for (int i = 1; i <= 9; i++) {
+                if (queue.getFirst().board[index].contains(i)) {
+
+                    queue.add(new Board());
+                    queue.getLast().board = Tools.copyBoard(queue.getFirst().board);
+                    queue.getLast().board[index].set(i);
+                    queue.getLast().updateNotes(index);
+                    queue.getLast().applyRules();
+
+                    if (queue.getLast().isFull() && queue.getLast().isValid()) {
+                        board = Tools.copyBoard(queue.getLast().board);
+                        return;
+                    }
+                }
+            }
+            queue.removeFirst();
+        } while (queue.isEmpty() == false);
+    }
+
     void main() {
+        // csvParseBoardCustom("customBoards.csv");
         csvParseBoard("sortedBoards.csv");
-        for (Board obj : storeBoards) {
-            printBoard(obj.board);
+        for (Board board : storeBoards) {
+            System.out.println(
+                    "------------------------------------------------------------------------------");
+            // System.out.println("initial");
+            // printBoard(board.board);
+            long start = System.nanoTime();
+            board.initNotes();
+            board.applyRules();
+            if (board.isFull() == false) {
+                board.guessSolve();
+            }
+            long stop = System.nanoTime();
+            long gap = stop - start;
+            // System.out.println("after");
+            // printBoard(board.board);
+            // System.out.println(board.isValid());
+            // Tools.printBoardIndex();
+            System.out.println(
+                    Tools.isEqual(board.board, board.solution)
+                            + ", time take: "
+                            + (gap) / 1_000_000.0
+                            + "ms");
         }
     }
 }

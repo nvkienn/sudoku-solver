@@ -23,6 +23,10 @@ class Cell {
         return Tools.binToNum(data);
     }
 
+    String getFullBin() {
+        return Integer.toBinaryString(data);
+    }
+
     boolean isSolved() {
         boolean result = Integer.bitCount(data) == 1 ? true : false;
         return result;
@@ -39,12 +43,15 @@ class Cell {
         return result;
     }
 
-    boolean sizeGreaterOrEqualTo(int num) {
-        boolean result = Integer.bitCount(this.data) >= num ? true : false;
-        return result;
+    int size() {
+        return Integer.bitCount(data);
     }
 
     void remove(Cell cell) {
         this.data = this.data & ~cell.data;
+    }
+
+    void remove(int data) {
+        this.data = this.data & ~data;
     }
 }
