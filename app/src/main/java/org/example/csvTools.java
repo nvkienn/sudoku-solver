@@ -10,6 +10,7 @@ import java.util.Collections;
 
 class csvTools {
 
+    int numOfBoards = 1000;
     ArrayList<Board> storeBoards = new ArrayList<>();
 
     // csvCreateSortedCsv --<
@@ -70,7 +71,7 @@ class csvTools {
 
     void csvWriteSortedBoard() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("sortedBoards.csv"))) {
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < numOfBoards; i++) {
                 bw.write(
                         storeBoards.get(i).csvGameBoard
                                 + ","

@@ -384,9 +384,10 @@ class Board {
         do {
             copyBoard.board = Tools.copyBoard(this.board);
             this.hiddenSingles();
-            this.obviousPairs();
-            this.hiddenPairs();
-            this.pointingPairs();
+            // applying these rules slows the solving down???
+            // this.obviousPairs();
+            // this.hiddenPairs();
+            // this.pointingPairs();
         } while (Tools.isEqual(copyBoard.board, this.board) == false);
     }
 
@@ -465,7 +466,13 @@ class Board {
     void main() {
         // csvParseBoardCustom("customBoards.csv");
         csvParseBoard("sortedBoards.csv");
+        long totalTime = 0;
+        long longestTime = 0;
+        int difficulty = 0;
+        int counter = 0;
+        boolean allSolved = true;
         for (Board board : storeBoards) {
+            counter += 1;
             System.out.println(
                     "------------------------------------------------------------------------------");
             // System.out.println("initial");
@@ -478,15 +485,32 @@ class Board {
             }
             long stop = System.nanoTime();
             long gap = stop - start;
+            totalTime += gap;
             // System.out.println("after");
             // printBoard(board.board);
             // System.out.println(board.isValid());
             // Tools.printBoardIndex();
             System.out.println(
-                    Tools.isEqual(board.board, board.solution)
-                            + ", time take: "
+                    counter
+                            + ": "
+                            + Tools.isEqual(board.board, board.solution)
+                            + ", time taken: "
                             + (gap) / 1_000_000.0
                             + "ms");
+            if (Tools.isEqual(board.board, board.solution) == false) {
+                allSolved = false;
+            }
+            if (gap > longestTime) {
+                longestTime = gap;
+                difficulty = Integer.parseInt(board.csvDifficulty);
+            }
         }
+        System.out.println(
+                "------------------------------------------------------------------------------");
+        System.out.println("Average time taken: " + (totalTime / 1000 / 1_000_000.0) + "ms");
+        System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
+        System.out.println("Difficulty of longest to solve baord: " + difficulty);
+        String message = (allSolved) ? "All solved" : "Failed to solve all";
+        System.out.println(message);
     }
 }
