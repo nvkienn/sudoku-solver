@@ -28,51 +28,6 @@ class Tools {
         return numToBin(num1) | numToBin(num2);
     }
 
-    static void printBoardIndex() { // --<
-        Board board = new Board();
-        board.printHorizontalBorder("=", "edge");
-        for (int x = 0; x < 9; x++) {
-            System.out.print("\n||");
-            for (int y = 0; y < 9; y++) {
-                if (y % 3 == 2) {
-                    if (x * 9 + y > 9) {
-                        System.out.print(" " + (x * 9 + y) + "||");
-                    } else {
-                        System.out.print(" " + (x * 9 + y) + " " + "||");
-                    }
-                } else {
-                    if (x * 9 + y > 9) {
-                        System.out.print(" " + (x * 9 + y) + "|");
-                    } else {
-                        System.out.print(" " + (x * 9 + y) + " " + "|");
-                    }
-                }
-            }
-            System.out.println();
-            if (x == 8) {
-                board.printHorizontalBorder("=", "edge");
-            } else if (x % 3 == 2) {
-                board.printHorizontalBorder("=", "body");
-            } else {
-                board.printHorizontalBorder("-", "body");
-            }
-        }
-        System.out.println();
-    }
-
-    // -->
-
-    static Cell[] copyBoard(Cell[] original) { // --<
-        Cell[] copy = new Cell[81];
-        for (int i = 0; i < 81; i++) {
-            copy[i] = new Cell();
-            copy[i].data = original[i].data;
-        }
-        return copy;
-    }
-
-    // -->
-
     static boolean isEqual(Cell[] board1, Cell[] board2) {
         for (int i = 0; i < 81; i++) {
             if (board1[i].data != board2[i].data) {
@@ -115,4 +70,111 @@ class Tools {
     static int getColumn(int index) {
         return index % 9;
     }
+
+    // printBoard(boardType) --<
+
+    static final int ROWLENGTH = 41;
+
+    static void printHorizontalBorder(String borderType, String part) { // --<
+        switch (part) {
+            case "body":
+                for (int i = 1; i <= ROWLENGTH; i++) {
+                    if (i == 6 || i == 10 || i == 14 || i == 15 || i == 19 || i == 23 || i == 27
+                            || i == 28 || i == 32 || i == 36) {
+                        System.out.print("+");
+                    } else {
+                        System.out.print(borderType);
+                    }
+                }
+                break;
+            case "edge":
+                for (int i = 1; i <= ROWLENGTH; i++) {
+                    System.out.print(borderType);
+                }
+                break;
+        }
+    }
+
+    // -->
+
+    static void printBoardLine(Cell cell, String borderType) { // --<
+        if (cell.isNotSolved()) {
+            System.out.print(" " + " " + " " + borderType);
+        } else {
+            System.out.print(" " + cell.get() + " " + borderType);
+        }
+    }
+
+    // -->
+
+    static void printBoard(Cell[] board) { // --<
+        printHorizontalBorder("=", "edge");
+        for (int x = 0; x < 9; x++) {
+            System.out.print("\n||");
+            for (int y = 0; y < 9; y++) {
+                if (y % 3 == 2) {
+                    printBoardLine(board[x * 9 + y], "||");
+                } else {
+                    printBoardLine(board[x * 9 + y], "|");
+                }
+            }
+            System.out.println();
+            if (x == 8) {
+                printHorizontalBorder("=", "edge");
+            } else if (x % 3 == 2) {
+                printHorizontalBorder("=", "body");
+            } else {
+                printHorizontalBorder("-", "body");
+            }
+        }
+        System.out.println();
+    }
+
+    // -->
+    // -->
+
+    static void printBoardIndex() { // --<
+        printHorizontalBorder("=", "edge");
+        for (int x = 0; x < 9; x++) {
+            System.out.print("\n||");
+            for (int y = 0; y < 9; y++) {
+                if (y % 3 == 2) {
+                    if (x * 9 + y > 9) {
+                        System.out.print(" " + (x * 9 + y) + "||");
+                    } else {
+                        System.out.print(" " + (x * 9 + y) + " " + "||");
+                    }
+                } else {
+                    if (x * 9 + y > 9) {
+                        System.out.print(" " + (x * 9 + y) + "|");
+                    } else {
+                        System.out.print(" " + (x * 9 + y) + " " + "|");
+                    }
+                }
+            }
+            System.out.println();
+            if (x == 8) {
+                printHorizontalBorder("=", "edge");
+            } else if (x % 3 == 2) {
+                printHorizontalBorder("=", "body");
+            } else {
+                printHorizontalBorder("-", "body");
+            }
+        }
+        System.out.println();
+    }
+
+    // -->
+
+    static Cell[] copyBoard(Cell[] original) { // --<
+        Cell[] copy = new Cell[81];
+        for (int i = 0; i < 81; i++) {
+            copy[i] = new Cell();
+            copy[i].data = original[i].data;
+        }
+        return copy;
+    }
+
+    // -->
+
 }

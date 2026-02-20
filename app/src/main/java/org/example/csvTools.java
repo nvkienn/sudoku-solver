@@ -10,11 +10,10 @@ import java.util.Collections;
 
 class csvTools {
 
-    int numOfBoards = 1000;
-    ArrayList<Board> storeBoards = new ArrayList<>();
+    static ArrayList<Board> storeBoards = new ArrayList<>();
 
     // csvCreateSortedCsv --<
-    void csvReadFile(String fileName) {
+    static void csvReadFile(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -30,7 +29,7 @@ class csvTools {
         }
     }
 
-    void csvSortStoreBoardsAsc(boolean asc) {
+    static void csvSortStoreBoardsAsc(boolean asc) {
         if (asc == true) {
             Collections.sort(
                     storeBoards,
@@ -69,7 +68,7 @@ class csvTools {
         }
     }
 
-    void csvWriteSortedBoard() {
+    static void csvWriteSortedBoard(int numOfBoards) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("sortedBoards.csv"))) {
             for (int i = 0; i < numOfBoards; i++) {
                 bw.write(
@@ -85,10 +84,67 @@ class csvTools {
         }
     }
 
-    void csvCreateSortedCsv(boolean asc) {
+    static void csvCreateSortedCsv(int numOfBoards, boolean asc) {
         csvReadFile("test.csv");
         csvSortStoreBoardsAsc(asc);
-        csvWriteSortedBoard();
+        csvWriteSortedBoard(numOfBoards);
+    }
+
+    // -->
+
+    static void csvParseBoard(String fileName) { // --<
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] csvBoardInfo = line.split(",");
+                App.storeBoards.add(new Board());
+                for (int i = 0; i < 81; i++) {
+                    App.storeBoards.getLast().board[i] = new Cell();
+                    App.storeBoards.getLast().solution[i] = new Cell();
+                    if (csvBoardInfo[0].charAt(i) == '.') {
+                        App.storeBoards.getLast().board[i].init();
+                    } else {
+                        App.storeBoards
+                                .getLast()
+                                .board[i]
+                                .set(
+                                        Integer.parseInt(
+                                                Character.toString(csvBoardInfo[0].charAt(i))));
+                    }
+                    App.storeBoards
+                            .getLast()
+                            .solution[i]
+                            .set(Integer.parseInt(Character.toString(csvBoardInfo[1].charAt(i))));
+                }
+                App.storeBoards.getLast().difficultyRating = Integer.parseInt(csvBoardInfo[2]);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+        }
+    }
+
+    // -->
+
+    static void csvParseBoardCustom(String fileName) { // --<
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                App.storeBoards.add(new Board());
+                for (int i = 0; i < 81; i++) {
+                    App.storeBoards.getLast().board[i] = new Cell();
+                    if (line.charAt(i) == '.') {
+                        App.storeBoards.getLast().board[i].init();
+                    } else {
+                        App.storeBoards
+                                .getLast()
+                                .board[i]
+                                .set(Integer.parseInt(Character.toString(line.charAt(i))));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+        }
     }
 
     // -->

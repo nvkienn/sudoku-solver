@@ -1,142 +1,24 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 class Board {
-    // variables --<
+    // attributes --<
     Cell[] board = new Cell[81];
     Cell[] solution = new Cell[81];
 
-    ArrayList<Board> storeBoards = new ArrayList<>();
+    int difficultyRating;
+    int numRulesApplied = 0;
+    boolean requiredToGuess = false;
+
+    // attributes to assist in creating sortedBoards.csv
     String csvGameBoard;
     String csvSolution;
     String csvDifficulty;
-    int difficultyRating;
-
-    final int ROWLENGTH = 41;
 
     // -->
 
-    void csvParseBoard(String fileName) { // --<
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] csvBoardInfo = line.split(",");
-                storeBoards.add(new Board());
-                for (int i = 0; i < 81; i++) {
-                    storeBoards.getLast().board[i] = new Cell();
-                    storeBoards.getLast().solution[i] = new Cell();
-                    if (csvBoardInfo[0].charAt(i) == '.') {
-                        storeBoards.getLast().board[i].init();
-                    } else {
-                        storeBoards
-                                .getLast()
-                                .board[i]
-                                .set(
-                                        Integer.parseInt(
-                                                Character.toString(csvBoardInfo[0].charAt(i))));
-                    }
-                    storeBoards
-                            .getLast()
-                            .solution[i]
-                            .set(Integer.parseInt(Character.toString(csvBoardInfo[1].charAt(i))));
-                }
-                storeBoards.getLast().difficultyRating = Integer.parseInt(csvBoardInfo[2]);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file.");
-        }
-    }
-
-    // -->
-
-    void csvParseBoardCustom(String fileName) { // --<
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                storeBoards.add(new Board());
-                for (int i = 0; i < 81; i++) {
-                    storeBoards.getLast().board[i] = new Cell();
-                    if (line.charAt(i) == '.') {
-                        storeBoards.getLast().board[i].init();
-                    } else {
-                        storeBoards
-                                .getLast()
-                                .board[i]
-                                .set(Integer.parseInt(Character.toString(line.charAt(i))));
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file.");
-        }
-    }
-
-    // -->
-
-    // printBoard(boardType) --<
-    void printHorizontalBorder(String borderType, String part) { // --<
-        switch (part) {
-            case "body":
-                for (int i = 1; i <= ROWLENGTH; i++) {
-                    if (i == 6 || i == 10 || i == 14 || i == 15 || i == 19 || i == 23 || i == 27
-                            || i == 28 || i == 32 || i == 36) {
-                        System.out.print("+");
-                    } else {
-                        System.out.print(borderType);
-                    }
-                }
-                break;
-            case "edge":
-                for (int i = 1; i <= ROWLENGTH; i++) {
-                    System.out.print(borderType);
-                }
-                break;
-        }
-    }
-
-    // -->
-
-    void printBoardLine(Cell cell, String borderType) { // --<
-        if (cell.isNotSolved()) {
-            System.out.print(" " + " " + " " + borderType);
-        } else {
-            System.out.print(" " + cell.get() + " " + borderType);
-        }
-    }
-
-    // -->
-
-    void printBoard(Cell[] board) { // --<
-        printHorizontalBorder("=", "edge");
-        for (int x = 0; x < 9; x++) {
-            System.out.print("\n||");
-            for (int y = 0; y < 9; y++) {
-                if (y % 3 == 2) {
-                    printBoardLine(board[x * 9 + y], "||");
-                } else {
-                    printBoardLine(board[x * 9 + y], "|");
-                }
-            }
-            System.out.println();
-            if (x == 8) {
-                printHorizontalBorder("=", "edge");
-            } else if (x % 3 == 2) {
-                printHorizontalBorder("=", "body");
-            } else {
-                printHorizontalBorder("-", "body");
-            }
-        }
-        System.out.println();
-    }
-
-    // -->
-    // -->
-
-    void updateNotes(int currIndex) {
+    void updateNotes(int currIndex) { // --<
         for (int index : Groups.getRelated(currIndex)) {
             if (board[index].isNotSolved()) {
                 board[index].remove(board[currIndex]);
@@ -147,7 +29,9 @@ class Board {
         }
     }
 
-    void initNotes() {
+    // -->
+
+    void initNotes() { // --<
         for (int i = 0; i < 81; i++) {
             if (board[i].isSolved()) {
                 updateNotes(i);
@@ -155,7 +39,9 @@ class Board {
         }
     }
 
-    void hiddenSingles() {
+    // -->
+
+    void hiddenSingles() { // --<
         for (int[] group : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
                 int counter = 0;
@@ -189,7 +75,9 @@ class Board {
         }
     }
 
-    void hiddenPairs() {
+    // -->
+
+    void hiddenPairsOld() { // --<
         for (int[] group : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
                 for (int j = i + 1; j <= 9; j++) {
@@ -240,7 +128,11 @@ class Board {
         }
     }
 
-    void obviousPairs() {
+    // -->
+
+    void hiddenPairs() {}
+
+    void obviousPairsOld() { // --<
         for (int[] group : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
                 loop:
@@ -288,7 +180,26 @@ class Board {
         }
     }
 
-    void pointingPairs() {
+    // -->
+
+    void obviousPairs() {
+        ArrayList<Integer> sizeTwoDataArr = new ArrayList<>();
+        ArrayList<Integer> obviousPairs = new ArrayList<>();
+        for (int[] group : Groups.groups) {
+            for (int index : group) {
+                if (board[index].size() == 2) {
+                    int data = board[index].data;
+                    if (sizeTwoDataArr.contains(data)) {
+                        obviousPairs.add(data);
+                    } else {
+                        sizeTwoDataArr.add(data);
+                    }
+                }
+            }
+        }
+    }
+
+    void pointingPairs() { // --<
         for (int[] box : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
                 int counter = 0;
@@ -379,20 +290,28 @@ class Board {
         }
     }
 
-    int numRulesApplied = 0;
+    // -->
 
-    void applyRules() {
+    void applyRules() { // --<
+        // stats:
+        // average time taken for 1000 boards:
+        // 1. No rules applied: 43ms
+        // 2. hiddenSingles: 8.7ms
+        // 3. obviousPairsOld: 166ms
+        // The others are so bad individually that it is not worth waiting.
+        // 4. All combined: 86ms, average rating: 518
         Board copyBoard = new Board();
         do {
             copyBoard.board = Tools.copyBoard(this.board);
             numRulesApplied += 1;
             this.hiddenSingles();
-            // applying these rules slows the solving down???
-            // this.obviousPairs();
-            // this.hiddenPairs();
+            // this.obviousPairsOld();
+            // this.hiddenPairsOld();
             // this.pointingPairs();
         } while (Tools.isEqual(copyBoard.board, this.board) == false);
     }
+
+    // -->
 
     boolean isValid() { // --<
         for (int[] group : Groups.groups) {
@@ -415,7 +334,7 @@ class Board {
 
     // -->
 
-    boolean isFull() {
+    boolean isFull() { // --<
         for (Cell cell : board) {
             if (cell.isNotSolved()) {
                 return false;
@@ -424,7 +343,9 @@ class Board {
         return true;
     }
 
-    int findLeastNotesIndex() {
+    // -->
+
+    int findLeastNotesIndex() { // --<
         int index = 0;
         int size = 9;
         for (int i = 0; i < 81; i++) {
@@ -442,7 +363,9 @@ class Board {
         return index;
     }
 
-    void guessSolve() {
+    // -->
+
+    void guessSolve() { // --<
         ArrayList<Board> queue = new ArrayList<>();
         queue.add(new Board());
         queue.getFirst().board = Tools.copyBoard(board);
@@ -468,60 +391,14 @@ class Board {
         } while (queue.isEmpty() == false);
     }
 
-    void main(int num) {
-        // csvParseBoardCustom("customBoards.csv");
-        csvParseBoard("sortedBoards.csv");
-        long totalTime = 0;
-        long longestTime = 0;
-        int difficulty = 0;
-        int counter = 0;
-        int numberNeededToGuess = 0;
-        int totalRating = 0;
-        boolean allSolved = true;
-        for (Board board : storeBoards) {
-            counter += 1;
-            System.out.println(
-                    "------------------------------------------------------------------------------");
-            long start = System.nanoTime();
-            board.initNotes();
-            board.applyRules();
-            if (board.isFull() == false) {
-                numberNeededToGuess += 1;
-                board.guessSolve();
-            }
-            long stop = System.nanoTime();
-            long gap = stop - start;
-            totalTime += gap;
-            totalRating += board.numRulesApplied;
-            System.out.println(
-                    counter
-                            + ": "
-                            + Tools.isEqual(board.board, board.solution)
-                            + ", time taken: "
-                            + (gap) / 1_000_000.0
-                            + "ms");
-            System.out.println(
-                    "Rating: " + board.difficultyRating + ", own rating: " + board.numRulesApplied);
-            if (Tools.isEqual(board.board, board.solution) == false) {
-                allSolved = false;
-            }
-            if (gap > longestTime) {
-                longestTime = gap;
-                difficulty = board.difficultyRating;
-            }
-            if (counter >= num) {
-                System.out.println(
-                        "------------------------------------------------------------------------------");
-                System.out.println("Average time taken: " + (totalTime / num / 1_000_000.0) + "ms");
-                System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
-                System.out.println("Difficulty of longest to solve baord: " + difficulty);
-                System.out.println("Average number of times rules applied: " + totalRating / num);
-                System.out.println(
-                        "Number of boards that required guessing: " + numberNeededToGuess);
-                String message = (allSolved) ? "All solved" : "Failed to solve all";
-                System.out.println(message);
-                return;
-            }
+    // -->
+
+    void solve() {
+        initNotes();
+        applyRules();
+        if (isFull() == false) {
+            requiredToGuess = true;
+            guessSolve();
         }
     }
 }
