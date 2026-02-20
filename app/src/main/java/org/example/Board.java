@@ -14,8 +14,7 @@ class Board {
     String csvGameBoard;
     String csvSolution;
     String csvDifficulty;
-
-    ArrayList<Board> queue = new ArrayList<>();
+    int difficultyRating;
 
     final int ROWLENGTH = 41;
 
@@ -45,7 +44,7 @@ class Board {
                             .solution[i]
                             .set(Integer.parseInt(Character.toString(csvBoardInfo[1].charAt(i))));
                 }
-                storeBoards.getLast().csvDifficulty = csvBoardInfo[2];
+                storeBoards.getLast().difficultyRating = Integer.parseInt(csvBoardInfo[2]);
             }
         } catch (IOException e) {
             System.out.println("Error reading file.");
@@ -244,6 +243,7 @@ class Board {
     void obviousPairs() {
         for (int[] group : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
+                loop:
                 for (int j = i + 1; j <= 9; j++) {
                     int counter = 0;
                     int index1 = -1;
@@ -253,7 +253,7 @@ class Board {
                     for (int index : group) {
                         if (board[index].isSolved()) {
                             if (board[index].get() == i || board[index].get() == j) {
-                                break groupLoop;
+                                continue loop;
                             } else {
                                 continue;
                             }
@@ -440,6 +440,7 @@ class Board {
     }
 
     void guessSolve() {
+        ArrayList<Board> queue = new ArrayList<>();
         queue.add(new Board());
         queue.getFirst().board = Tools.copyBoard(board);
         do {
@@ -463,13 +464,14 @@ class Board {
         } while (queue.isEmpty() == false);
     }
 
-    void main() {
+    void main(int num) {
         // csvParseBoardCustom("customBoards.csv");
         csvParseBoard("sortedBoards.csv");
         long totalTime = 0;
         long longestTime = 0;
         int difficulty = 0;
         int counter = 0;
+        int numberNeededToGuess = 0;
         boolean allSolved = true;
         for (Board board : storeBoards) {
             counter += 1;
@@ -481,6 +483,7 @@ class Board {
             board.initNotes();
             board.applyRules();
             if (board.isFull() == false) {
+                numberNeededToGuess += 1;
                 board.guessSolve();
             }
             long stop = System.nanoTime();
@@ -497,20 +500,25 @@ class Board {
                             + ", time taken: "
                             + (gap) / 1_000_000.0
                             + "ms");
+            System.out.println("Rating: " + board.difficultyRating);
             if (Tools.isEqual(board.board, board.solution) == false) {
                 allSolved = false;
             }
             if (gap > longestTime) {
                 longestTime = gap;
-                difficulty = Integer.parseInt(board.csvDifficulty);
+                difficulty = board.difficultyRating;
+            }
+            if (counter >= num) {
+                System.out.println(
+                        "------------------------------------------------------------------------------");
+                System.out.println("Average time taken: " + (totalTime / num / 1_000_000.0) + "ms");
+                System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
+                System.out.println("Difficulty of longest to solve baord: " + difficulty);
+                String message = (allSolved) ? "All solved" : "Failed to solve all";
+                System.out.println(message);
+                System.out.println(numberNeededToGuess);
+                return;
             }
         }
-        System.out.println(
-                "------------------------------------------------------------------------------");
-        System.out.println("Average time taken: " + (totalTime / 1000 / 1_000_000.0) + "ms");
-        System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
-        System.out.println("Difficulty of longest to solve baord: " + difficulty);
-        String message = (allSolved) ? "All solved" : "Failed to solve all";
-        System.out.println(message);
     }
 }

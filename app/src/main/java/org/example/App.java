@@ -4,7 +4,7 @@ public class App {
     public static void main(String[] args) {
 
         Board board = new Board();
-        board.main();
+        board.main(1000);
 
         // csvTools csv = new csvTools();
         // csv.csvCreateSortedCsv(false);
