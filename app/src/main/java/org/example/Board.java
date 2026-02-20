@@ -182,10 +182,10 @@ class Board {
 
     // -->
 
-    void obviousPairs() {
-        ArrayList<Integer> sizeTwoDataArr = new ArrayList<>();
-        ArrayList<Integer> obviousPairs = new ArrayList<>();
+    void obviousPairs() { // --<
         for (int[] group : Groups.groups) {
+            ArrayList<Integer> sizeTwoDataArr = new ArrayList<>();
+            ArrayList<Integer> obviousPairs = new ArrayList<>();
             for (int index : group) {
                 if (board[index].size() == 2) {
                     int data = board[index].data;
@@ -196,8 +196,26 @@ class Board {
                     }
                 }
             }
+            while (obviousPairs.isEmpty() == false) {
+                int currData = obviousPairs.getLast();
+                for (int index : group) {
+                    if (board[index].isSolved()) {
+                        continue;
+                    }
+                    if (board[index].data == currData) {
+                        continue;
+                    }
+                    board[index].remove(currData);
+                    if (board[index].isSolved()) {
+                        updateNotes(index);
+                    }
+                }
+                obviousPairs.removeLast();
+            }
         }
     }
+
+    // -->
 
     void pointingPairs() { // --<
         for (int[] box : Groups.groups) {
@@ -304,8 +322,9 @@ class Board {
         do {
             copyBoard.board = Tools.copyBoard(this.board);
             numRulesApplied += 1;
-            this.hiddenSingles();
+            // this.hiddenSingles();
             // this.obviousPairsOld();
+            obviousPairs();
             // this.hiddenPairsOld();
             // this.pointingPairs();
         } while (Tools.isEqual(copyBoard.board, this.board) == false);

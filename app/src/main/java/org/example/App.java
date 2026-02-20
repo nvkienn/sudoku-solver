@@ -13,9 +13,13 @@ public class App {
 
         int numOfBoardToSolve = 1000;
         boolean printBoard = false;
+        boolean custom = false;
 
-        // csvParseBoardCustom("customBoards.csv");
-        csvTools.csvParseBoard("sortedBoards.csv");
+        if (custom == true) {
+            csvTools.csvParseBoardCustom("customBoards.csv");
+        } else {
+            csvTools.csvParseBoard("sortedBoards.csv");
+        }
 
         long totalTime = 0;
         long longestTime = 0;
@@ -35,7 +39,12 @@ public class App {
             }
             long start = System.nanoTime();
 
-            board.solve();
+            if (custom == true) {
+                board.initNotes();
+                board.applyRules();
+            } else {
+                board.solve();
+            }
 
             long stop = System.nanoTime();
             long gap = stop - start;
@@ -44,22 +53,35 @@ public class App {
             if (printBoard == true) {
                 Tools.printBoard(board.board);
             }
-            System.out.println(
-                    counter
-                            + ": "
-                            + Tools.isEqual(board.board, board.solution)
-                            + ", time taken: "
-                            + (gap) / 1_000_000.0
-                            + "ms");
+            if (custom == true) {
+                System.out.println(
+                        counter
+                                + ": "
+                                + board.isValid()
+                                + ", time taken: "
+                                + (gap) / 1_000_000.0
+                                + "ms");
+                if (board.isValid()) {
+                    allSolved = true;
+                }
+            } else {
+                System.out.println(
+                        counter
+                                + ": "
+                                + Tools.isEqual(board.board, board.solution)
+                                + ", time taken: "
+                                + (gap) / 1_000_000.0
+                                + "ms");
+                if (Tools.isEqual(board.board, board.solution) == false) {
+                    allSolved = false;
+                }
+                if (gap > longestTime) {
+                    longestTime = gap;
+                    difficulty = board.difficultyRating;
+                }
+            }
             System.out.println(
                     "Rating: " + board.difficultyRating + ", own rating: " + board.numRulesApplied);
-            if (Tools.isEqual(board.board, board.solution) == false) {
-                allSolved = false;
-            }
-            if (gap > longestTime) {
-                longestTime = gap;
-                difficulty = board.difficultyRating;
-            }
             if (board.requiredToGuess == true) {
                 numberNeededToGuess += 1;
             }
