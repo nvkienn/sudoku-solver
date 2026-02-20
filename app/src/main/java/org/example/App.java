@@ -6,6 +6,20 @@ public class App {
         Board board = new Board();
         board.main(1000);
 
+        // Obvious Pairs
+        // Go through a group.
+        // Identify those with size == 2
+        // Add to HashMap with an associated counter.
+        // Afterwards, go through HashMap
+        // If counter == 2,
+        // go through group again and remove that pair.
+        // Hidden Pairs
+        // Go through a group.
+        // Have a num Counter [] with arrays holding the indexes of the occurrence of these numbers.
+        // if no. of occurence == 2,
+        // check if they coincide in same cell by looking at indexes.
+        // if they do then go through group and remove
+
         // csvTools csv = new csvTools();
         // csv.csvCreateSortedCsv(false);
         // String x = "";

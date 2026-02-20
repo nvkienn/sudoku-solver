@@ -379,10 +379,13 @@ class Board {
         }
     }
 
+    int numRulesApplied = 0;
+
     void applyRules() {
         Board copyBoard = new Board();
         do {
             copyBoard.board = Tools.copyBoard(this.board);
+            numRulesApplied += 1;
             this.hiddenSingles();
             // applying these rules slows the solving down???
             // this.obviousPairs();
@@ -453,6 +456,7 @@ class Board {
                     queue.getLast().board[index].set(i);
                     queue.getLast().updateNotes(index);
                     queue.getLast().applyRules();
+                    this.numRulesApplied += queue.getLast().numRulesApplied;
 
                     if (queue.getLast().isFull() && queue.getLast().isValid()) {
                         board = Tools.copyBoard(queue.getLast().board);
@@ -472,13 +476,12 @@ class Board {
         int difficulty = 0;
         int counter = 0;
         int numberNeededToGuess = 0;
+        int totalRating = 0;
         boolean allSolved = true;
         for (Board board : storeBoards) {
             counter += 1;
             System.out.println(
                     "------------------------------------------------------------------------------");
-            // System.out.println("initial");
-            // printBoard(board.board);
             long start = System.nanoTime();
             board.initNotes();
             board.applyRules();
@@ -489,10 +492,7 @@ class Board {
             long stop = System.nanoTime();
             long gap = stop - start;
             totalTime += gap;
-            // System.out.println("after");
-            // printBoard(board.board);
-            // System.out.println(board.isValid());
-            // Tools.printBoardIndex();
+            totalRating += board.numRulesApplied;
             System.out.println(
                     counter
                             + ": "
@@ -500,7 +500,8 @@ class Board {
                             + ", time taken: "
                             + (gap) / 1_000_000.0
                             + "ms");
-            System.out.println("Rating: " + board.difficultyRating);
+            System.out.println(
+                    "Rating: " + board.difficultyRating + ", own rating: " + board.numRulesApplied);
             if (Tools.isEqual(board.board, board.solution) == false) {
                 allSolved = false;
             }
@@ -514,9 +515,11 @@ class Board {
                 System.out.println("Average time taken: " + (totalTime / num / 1_000_000.0) + "ms");
                 System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
                 System.out.println("Difficulty of longest to solve baord: " + difficulty);
+                System.out.println("Average number of times rules applied: " + totalRating / num);
+                System.out.println(
+                        "Number of boards that required guessing: " + numberNeededToGuess);
                 String message = (allSolved) ? "All solved" : "Failed to solve all";
                 System.out.println(message);
-                System.out.println(numberNeededToGuess);
                 return;
             }
         }
