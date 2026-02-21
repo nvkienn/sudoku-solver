@@ -41,7 +41,7 @@ class Board {
 
     // -->
 
-    void hiddenSingles() { // --<
+    void hiddenSinglesOld() { // --<
         for (int[] group : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
                 int counter = 0;
@@ -63,6 +63,35 @@ class Board {
                 }
 
                 if (counter == 1) {
+                    for (int index : group) {
+                        if (board[index].contains(i)) {
+                            board[index].set(i);
+                            updateNotes(index);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // -->
+
+    void hiddenSingles() { // --<
+        for (int[] group : Groups.groups) {
+            int[] counter = new int[9];
+            for (int index : group) {
+                if (board[index].isSolved()) {
+                    continue;
+                }
+                for (int i = 1; i <= 9; i++) {
+                    if (board[index].contains(i)) {
+                        counter[i - 1] += 1;
+                    }
+                }
+            }
+            for (int i = 1; i <= 9; i++) {
+                if (counter[i - 1] == 1) {
                     for (int index : group) {
                         if (board[index].contains(i)) {
                             board[index].set(i);
@@ -196,8 +225,7 @@ class Board {
                     }
                 }
             }
-            while (obviousPairs.isEmpty() == false) {
-                int currData = obviousPairs.getLast();
+            for (int currData : obviousPairs) {
                 for (int index : group) {
                     if (board[index].isSolved()) {
                         continue;
@@ -210,7 +238,6 @@ class Board {
                         updateNotes(index);
                     }
                 }
-                obviousPairs.removeLast();
             }
         }
     }
@@ -310,23 +337,89 @@ class Board {
 
     // -->
 
+    void mergeHiddenSinglesAndObviousPairs() {
+        for (int[] group : Groups.groups) {
+            ArrayList<Integer> sizeTwoDataArr = new ArrayList<>();
+            ArrayList<Integer> obviousPairs = new ArrayList<>();
+            int[] singlesCounter = new int[9];
+            for (int index : group) {
+                if (board[index].isSolved()) {
+                    continue;
+                }
+
+                // hiddenSingles
+                for (int i = 1; i <= 9; i++) {
+                    if (board[index].contains(i)) {
+                        singlesCounter[i - 1] += 1;
+                    }
+                }
+
+                // obviousPairs
+                if (board[index].size() == 2) {
+                    int data = board[index].data;
+                    if (sizeTwoDataArr.contains(data)) {
+                        obviousPairs.add(data);
+                    } else {
+                        sizeTwoDataArr.add(data);
+                    }
+                }
+            }
+
+            // hiddenSingles
+            for (int i = 1; i <= 9; i++) {
+                if (singlesCounter[i - 1] == 1) {
+                    for (int index : group) {
+                        if (board[index].contains(i)) {
+                            board[index].set(i);
+                            updateNotes(index);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // obviousPairs
+            for (int currData : obviousPairs) {
+                for (int index : group) {
+                    if (board[index].isSolved()) {
+                        continue;
+                    }
+                    if (board[index].data == currData) {
+                        continue;
+                    }
+                    board[index].remove(currData);
+                    if (board[index].isSolved()) {
+                        updateNotes(index);
+                    }
+                }
+            }
+        }
+    }
+
     void applyRules() { // --<
         // stats:
         // average time taken for 1000 boards:
         // 1. No rules applied: 43ms
-        // 2. hiddenSingles: 8.7ms
+        // 2. hiddenSinglesOld: 8.3ms, average rating: 814
         // 3. obviousPairsOld: 166ms
         // The others are so bad individually that it is not worth waiting.
         // 4. All combined: 86ms, average rating: 518
+        //
+        // new obviousPairs: 12.7ms
+        // hiddenSinglesOld + new obviousPairs: 7.7ms, average rating: 632
+        // hiddenSingles: 6.3ms, average rating: 835
+        // hiddenSingles + obviousPairs: 5.7ms, average rating: 640
         Board copyBoard = new Board();
         do {
             copyBoard.board = Tools.copyBoard(this.board);
             numRulesApplied += 1;
+            // this.hiddenSinglesOld();
             // this.hiddenSingles();
             // this.obviousPairsOld();
-            obviousPairs();
+            // this.obviousPairs();
             // this.hiddenPairsOld();
             // this.pointingPairs();
+            mergeHiddenSinglesAndObviousPairs();
         } while (Tools.isEqual(copyBoard.board, this.board) == false);
     }
 
