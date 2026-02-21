@@ -189,6 +189,7 @@ class GeneratorOfGroups {
             writeBoxesAttr(bw);
             writeRelations(bw);
             writeGetRelatedMethod(bw);
+            // ----------------------------
 
             bw.write("}");
         } catch (IOException e) {

@@ -4,19 +4,24 @@ import java.util.ArrayList;
 
 public class App {
 
+    public static void main(String[] args) {
+        solve(1000);
+        // System.out.println(testHiddenPairs());
+    }
+
     static ArrayList<Board> storeBoards = new ArrayList<>();
 
-    public static void main(String[] args) {
+    static void solve(int numOfBoardToSolve) {
+        solve(numOfBoardToSolve, false, false);
+    }
 
+    static void solve(int numOfBoardToSolve, boolean printBoard, boolean custom) {
         // to create sortedBoards.csv
         // csvTools.csvCreateSortedCsv(numOfBoards, asc(true/false));
 
-        int numOfBoardToSolve = 1000;
-        boolean printBoard = false;
-        boolean custom = false;
-
         if (custom == true) {
             csvTools.csvParseBoardCustom("customBoards.csv");
+            numOfBoardToSolve = 1;
         } else {
             csvTools.csvParseBoard("sortedBoards.csv");
         }
@@ -39,12 +44,7 @@ public class App {
             }
             long start = System.nanoTime();
 
-            if (custom == true) {
-                board.initNotes();
-                board.applyRules();
-            } else {
-                board.solve();
-            }
+            board.solve();
 
             long stop = System.nanoTime();
             long gap = stop - start;
@@ -61,8 +61,8 @@ public class App {
                                 + ", time taken: "
                                 + (gap) / 1_000_000.0
                                 + "ms");
-                if (board.isValid()) {
-                    allSolved = true;
+                if (board.isValid() == false) {
+                    allSolved = false;
                 }
             } else {
                 System.out.println(
@@ -108,5 +108,17 @@ public class App {
                 return;
             }
         }
+    }
+
+    static String testHiddenPairs() {
+        csvTools.csvParseBoardCustom("customBoards.csv");
+        Board board = storeBoards.get(0);
+        board.initNotes();
+        board.hiddenSinglesAndPairs();
+        if (board.board[45].data == Tools.generatePairBin(2, 9)
+                && board.board[52].data == Tools.generatePairBin(2, 9)) {
+            return "HiddenPairs() works";
+        }
+        return "HiddenPairs() does not work";
     }
 }
