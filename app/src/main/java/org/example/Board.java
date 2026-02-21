@@ -42,42 +42,6 @@ class Board {
 
     // -->
 
-    void hiddenSinglesOld() { // --<
-        for (int[] group : Groups.groups) {
-            for (int i = 1; i <= 9; i++) {
-                int counter = 0;
-
-                groupLoop:
-                for (int index : group) {
-                    // note that if solved with a diff number, it would not contain i anyways and
-                    // will move on to the next index in the group
-                    if (board[index].contains(i)) {
-                        if (board[index].isSolved()) {
-                            // if already solved, move on to next number
-                            break groupLoop;
-                        }
-                        counter += 1;
-                        if (counter > 1) {
-                            break groupLoop;
-                        }
-                    }
-                }
-
-                if (counter == 1) {
-                    for (int index : group) {
-                        if (board[index].contains(i)) {
-                            board[index].set(i);
-                            updateNotes(index);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // -->
-
     void hiddenSingles() { // --<
         for (int[] group : Groups.groups) {
             int[] counter = new int[9];
@@ -156,7 +120,7 @@ class Board {
 
     // -->
 
-    void hiddenPairsOld() { // --<
+    void hiddenPairs() { // --<
         for (int[] group : Groups.groups) {
             for (int i = 1; i <= 9; i++) {
                 for (int j = i + 1; j <= 9; j++) {
@@ -198,58 +162,6 @@ class Board {
                                 counter += 1;
                                 if (counter == 2) {
                                     break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // -->
-
-    void hiddenPairs() {}
-
-    void obviousPairsOld() { // --<
-        for (int[] group : Groups.groups) {
-            for (int i = 1; i <= 9; i++) {
-                loop:
-                for (int j = i + 1; j <= 9; j++) {
-                    int counter = 0;
-                    int index1 = -1;
-                    int index2 = -1;
-
-                    groupLoop:
-                    for (int index : group) {
-                        if (board[index].isSolved()) {
-                            if (board[index].get() == i || board[index].get() == j) {
-                                continue loop;
-                            } else {
-                                continue;
-                            }
-                        }
-                        if (board[index].contains(i)
-                                && board[index].contains(j)
-                                && board[index].size() == 2) {
-                            counter += 1;
-                            if (counter == 1) {
-                                index1 = index;
-                            } else if (counter == 2) {
-                                index2 = index;
-                                break groupLoop;
-                            }
-                        }
-                    }
-
-                    if (counter == 2) {
-                        for (int index : group) {
-                            if (index == index1 || index == index2) {
-                                continue;
-                            } else if (board[index].contains(i) || board[index].contains(j)) {
-                                board[index].remove(Tools.generatePairBin(i, j));
-                                if (board[index].isSolved()) {
-                                    updateNotes(index);
                                 }
                             }
                         }
