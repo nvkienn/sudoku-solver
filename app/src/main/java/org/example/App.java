@@ -5,17 +5,28 @@ import java.util.ArrayList;
 public class App {
 
     public static void main(String[] args) {
-        solve(1000);
+        solve(1000, false, false);
+        // System.out.println(testHiddenSingles());
+        // System.out.println(testobviousPairs());
         // System.out.println(testHiddenPairs());
     }
 
     static ArrayList<Board> storeBoards = new ArrayList<>();
 
+    /**
+     * printBoard = true // print inital and final state of board, custom = true // read Boards from
+     * customBoards.csv instead of sortedBoards.csv
+     */
     static void solve(int numOfBoardToSolve) {
         solve(numOfBoardToSolve, false, false);
     }
 
+    /**
+     * printBoard = true // print inital and final state of board, custom = true // read Boards from
+     * customBoards.csv instead of sortedBoards.csv
+     */
     static void solve(int numOfBoardToSolve, boolean printBoard, boolean custom) {
+
         // to create sortedBoards.csv
         // csvTools.csvCreateSortedCsv(numOfBoards, asc(true/false));
 
@@ -110,11 +121,36 @@ public class App {
         }
     }
 
+    static String testHiddenSingles() {
+        csvTools.csvParseBoardCustom("customBoards.csv");
+        Board board = storeBoards.get(0);
+        board.initNotes();
+        board.hiddenSingles();
+        Cell cell1 = board.board[56];
+        if (cell1.isSolved() && cell1.contains(1)) {
+            return "hiddenSingles() works";
+        }
+        return "hiddenSingles() does not work";
+    }
+
+    static String testobviousPairs() {
+        csvTools.csvParseBoardCustom("customBoards.csv");
+        Board board = storeBoards.get(1);
+        board.initNotes();
+        board.obviousPairs();
+        Cell cell1 = board.board[3];
+        Cell cell2 = board.board[14];
+        if (cell1.isSolved() && cell1.contains(6) && cell2.isSolved() && cell2.contains(4)) {
+            return "obviousPairs() works";
+        }
+        return "obviousPairs() does not work";
+    }
+
     static String testHiddenPairs() {
         csvTools.csvParseBoardCustom("customBoards.csv");
         Board board = storeBoards.get(0);
         board.initNotes();
-        board.hiddenSinglesAndPairs();
+        board.hiddenPairs();
         if (board.board[45].data == Tools.generatePairBin(2, 9)
                 && board.board[52].data == Tools.generatePairBin(2, 9)) {
             return "HiddenPairs() works";

@@ -71,6 +71,48 @@ class Board {
 
     // -->
 
+    void hiddenPairs() { // --<
+        for (int[] group : Groups.groups) {
+            HashMap<Integer, ArrayList<Integer>> counter = new HashMap<>();
+            for (int i = 1; i <= 9; i++) {
+                counter.put(i, new ArrayList<>());
+            }
+            for (int index : group) {
+                if (board[index].isSolved()) {
+                    continue;
+                }
+                for (int i = 1; i <= 9; i++) {
+                    if (board[index].contains(i)) {
+                        counter.get(i).add(index);
+                    }
+                }
+            }
+            for (int i = 1; i <= 9; i++) {
+                if (counter.get(i).size() != 2) {
+                    counter.remove(i);
+                }
+            }
+            for (int i : counter.keySet()) {
+                for (int j : counter.keySet()) {
+                    if (i == j) {
+                        continue;
+                    }
+                    if (counter.get(i).containsAll(counter.get(j))) {
+                        for (int index : counter.get(i)) {
+                            if (board[index].contains(i)
+                                    && board[index].contains(j)
+                                    && board[index].size() > 2) {
+                                board[index].set(Tools.generatePairBin(i, j), false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // -->
+
     void hiddenSinglesAndPairs() { // --<
         for (int[] group : Groups.groups) {
             HashMap<Integer, ArrayList<Integer>> counter = new HashMap<>();
@@ -264,9 +306,10 @@ class Board {
         do {
             copyBoard.board = Tools.copyBoard(this.board);
             numRulesApplied += 1;
-            this.hiddenSinglesAndPairs();
-            // this.hiddenSingles();
-            // this.obviousPairs();
+            this.hiddenSingles();
+            this.obviousPairs();
+            // this.hiddenSinglesAndPairs();
+            // this.hiddenPairs();
         } while (Tools.isEqual(copyBoard.board, this.board) == false);
     }
 
@@ -343,6 +386,10 @@ class Board {
                     if (queue.getLast().isFull() && queue.getLast().isValid()) {
                         board = Tools.copyBoard(queue.getLast().board);
                         return;
+                    }
+
+                    if (queue.getLast().isValid() == false) {
+                        queue.removeLast();
                     }
                 }
             }
