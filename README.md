@@ -83,7 +83,7 @@ Applying `hiddenPairs()` drastically reduces solving speed as the algorithm to f
 
 ### Number Of Times Rules Are Applied
 
-Generally, the more rules applied, the less the rules have to be applied. However, different rules have different magnitude of impact on this metric.
+Generally, the more rules used, the less the number of times the rules have to be applied. However, different rules have different magnitude of impact on this metric.
 
 For example, applying `hiddenSingles()` has a larger effect on reducing the number of times rules are applied, whereas applying `hiddenPairs()` does not make much of a difference as there are usually less hidden pairs found in a game.
 
