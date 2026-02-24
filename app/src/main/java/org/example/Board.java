@@ -317,16 +317,13 @@ class Board {
 
     boolean isValid() { // --<
         for (int[] group : Groups.groups) {
-            for (int i = 1; i <= 9; i++) {
-                int counter = 0;
-                for (int index : group) {
-                    if (board[index].isSolved()) {
-                        if (board[index].get() == i) {
-                            counter += 1;
-                            if (counter > 1) {
-                                return false;
-                            }
-                        }
+            int[] counter = new int[9];
+            for (int index : group) {
+                if (board[index].isSolved()) {
+                    int num = board[index].get();
+                    counter[num - 1] += 1;
+                    if (counter[num - 1] > 1) {
+                        return false;
                     }
                 }
             }
