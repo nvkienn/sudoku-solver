@@ -398,6 +398,7 @@ class Board {
             queue.removeFirst();
         } while (queue.isEmpty() == false);
         System.out.println("ERROR: BOARD IS NOT SOLVABLE.");
+        System.exit(1);
     }
 
     // -->

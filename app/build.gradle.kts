@@ -46,3 +46,7 @@ tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+tasks.shadowJar {
+	archiveFileName.set("solver.jar")
+}

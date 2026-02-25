@@ -4,9 +4,20 @@ import java.util.ArrayList;
 
 public class App {
 
+    static String HELP_TEXT =
+            "\nSudoku-Solver\n\n"
+                    + "	USAGE: java -jar solver.jar <boards-file>\n\n"
+                    + "	Note: solver.jar takes exactly one file.\n";
+
     public static void main(String[] args) {
-        // System.out.println(args);
-        solve(1000, false, false);
+        if (args.length == 0) {
+            System.out.println(HELP_TEXT);
+        } else if (args.length == 1) {
+            solve(args[0]);
+        } else {
+            System.out.println("ERROR: solver.jar only takes exactly one file.");
+        }
+        // testSolve();
         // System.out.println(testHiddenSingles());
         // System.out.println(testobviousPairs());
         // System.out.println(testHiddenPairs());
@@ -15,25 +26,22 @@ public class App {
 
     static ArrayList<Board> storeBoards = new ArrayList<>();
 
-    /**
-     * printBoard = true // print inital and final state of board, custom = true // read Boards from
-     * customBoards.csv instead of sortedBoards.csv
-     */
-    static void solve() {
-        solve(storeBoards.size(), true, true);
+    static void solve(String fileName) {
+        solve(fileName, 0, true, true);
     }
 
-    /**
-     * printBoard = true // print inital and final state of board, custom = true // read Boards from
-     * customBoards.csv instead of sortedBoards.csv
-     */
-    static void solve(int numOfBoardToSolve, boolean printBoard, boolean custom) {
+    static void testSolve() {
+        solve("", 1000, false, false);
+    }
+
+    static void solve(String fileName, int numOfBoardToSolve, boolean printBoard, boolean custom) {
 
         // to create sortedBoards.csv
         // csvTools.csvCreateSortedCsv(numOfBoards, asc(true/false));
 
         if (custom == true) {
-            csvTools.csvParseBoardCustom("customBoards.txt");
+            csvTools.csvParseBoardCustom(fileName);
+            numOfBoardToSolve = storeBoards.size();
         } else {
             csvTools.csvParseBoard("sortedBoards.csv");
         }
@@ -66,11 +74,20 @@ public class App {
                 Tools.printBoard(board.board);
             }
             if (custom == true) {
-                System.out.println(counter + ": " + ", time taken: " + (gap) / 1_000_000.0 + "ms");
+                System.out.println(counter + ": " + "time taken: " + (gap) / 1_000_000.0 + "ms");
+                System.out.println("Number of times rules applied: " + board.numRulesApplied);
+                if (gap > longestTime) {
+                    longestTime = gap;
+                }
             } else {
                 String result = Tools.isEqual(board.board, board.solution) ? "solved" : "unsolved";
                 System.out.println(
                         counter + ": " + result + ", time taken: " + (gap) / 1_000_000.0 + "ms");
+                System.out.println(
+                        "Rating: "
+                                + board.difficultyRating
+                                + ", own rating: "
+                                + board.numRulesApplied);
                 if (Tools.isEqual(board.board, board.solution) == false) {
                     allSolved = false;
                 }
@@ -79,8 +96,6 @@ public class App {
                     difficulty = board.difficultyRating;
                 }
             }
-            System.out.println(
-                    "Rating: " + board.difficultyRating + ", own rating: " + board.numRulesApplied);
             if (board.requiredToGuess == true) {
                 numberNeededToGuess += 1;
             }
@@ -90,16 +105,20 @@ public class App {
             if (counter >= numOfBoardToSolve) {
                 System.out.println(
                         "------------------------------------------------------------------------------");
+                System.out.println("SUMMARY:");
                 System.out.println(
                         "Average time taken: "
                                 + (totalTime / numOfBoardToSolve / 1_000_000.0)
                                 + "ms");
                 System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
-                System.out.println("Difficulty of longest to solve baord: " + difficulty);
+                if (custom == false) {
+                    System.out.println("Difficulty of longest to solve baord: " + difficulty);
+                }
                 System.out.println(
                         "Average number of times rules applied: "
                                 + totalRating / numOfBoardToSolve);
                 System.out.println("Maximum number of rules applied: " + ownDifficulty);
+                System.out.println("Number of boards solved: " + numOfBoardToSolve);
                 System.out.println(
                         "Number of boards that required guessing: " + numberNeededToGuess);
                 String message = (allSolved) ? "All solved" : "Failed to solve all";
