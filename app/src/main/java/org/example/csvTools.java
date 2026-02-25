@@ -2,6 +2,7 @@ package org.example;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -142,6 +143,8 @@ class csvTools {
                     }
                 }
             }
+        } catch (FileNotFoundException e) {
+            System.out.println("File does not exist.");
         } catch (IOException e) {
             System.out.println("Error reading file.");
         }

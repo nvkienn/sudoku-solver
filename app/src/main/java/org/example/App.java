@@ -5,10 +5,11 @@ import java.util.ArrayList;
 public class App {
 
     public static void main(String[] args) {
-        solve(1000, false, false);
+        // solve(1000, false, false);
         // System.out.println(testHiddenSingles());
         // System.out.println(testobviousPairs());
         // System.out.println(testHiddenPairs());
+        // System.out.println(testPointingPairs());
     }
 
     static ArrayList<Board> storeBoards = new ArrayList<>();
@@ -17,8 +18,8 @@ public class App {
      * printBoard = true // print inital and final state of board, custom = true // read Boards from
      * customBoards.csv instead of sortedBoards.csv
      */
-    static void solve(int numOfBoardToSolve) {
-        solve(numOfBoardToSolve, false, false);
+    static void solve() {
+        solve(storeBoards.size(), true, true);
     }
 
     /**
@@ -31,8 +32,7 @@ public class App {
         // csvTools.csvCreateSortedCsv(numOfBoards, asc(true/false));
 
         if (custom == true) {
-            csvTools.csvParseBoardCustom("customBoards.csv");
-            numOfBoardToSolve = 1;
+            csvTools.csvParseBoardCustom("customBoards.txt");
         } else {
             csvTools.csvParseBoard("sortedBoards.csv");
         }
@@ -65,24 +65,11 @@ public class App {
                 Tools.printBoard(board.board);
             }
             if (custom == true) {
-                System.out.println(
-                        counter
-                                + ": "
-                                + board.isValid()
-                                + ", time taken: "
-                                + (gap) / 1_000_000.0
-                                + "ms");
-                if (board.isValid() == false) {
-                    allSolved = false;
-                }
+                System.out.println(counter + ": " + ", time taken: " + (gap) / 1_000_000.0 + "ms");
             } else {
+                String result = Tools.isEqual(board.board, board.solution) ? "solved" : "unsolved";
                 System.out.println(
-                        counter
-                                + ": "
-                                + Tools.isEqual(board.board, board.solution)
-                                + ", time taken: "
-                                + (gap) / 1_000_000.0
-                                + "ms");
+                        counter + ": " + result + ", time taken: " + (gap) / 1_000_000.0 + "ms");
                 if (Tools.isEqual(board.board, board.solution) == false) {
                     allSolved = false;
                 }
@@ -122,7 +109,7 @@ public class App {
     }
 
     static String testHiddenSingles() {
-        csvTools.csvParseBoardCustom("customBoards.csv");
+        csvTools.csvParseBoardCustom("testBoards.csv");
         Board board = storeBoards.get(0);
         board.initNotes();
         board.hiddenSingles();
@@ -134,7 +121,7 @@ public class App {
     }
 
     static String testobviousPairs() {
-        csvTools.csvParseBoardCustom("customBoards.csv");
+        csvTools.csvParseBoardCustom("testBoards.csv");
         Board board = storeBoards.get(1);
         board.initNotes();
         board.obviousPairs();
@@ -147,14 +134,30 @@ public class App {
     }
 
     static String testHiddenPairs() {
-        csvTools.csvParseBoardCustom("customBoards.csv");
+        csvTools.csvParseBoardCustom("testBoards.csv");
         Board board = storeBoards.get(0);
         board.initNotes();
         board.hiddenPairs();
         if (board.board[45].data == Tools.generatePairBin(2, 9)
                 && board.board[52].data == Tools.generatePairBin(2, 9)) {
-            return "HiddenPairs() works";
+            return "hiddenPairs() works";
         }
-        return "HiddenPairs() does not work";
+        return "hiddenPairs() does not work";
+    }
+
+    static String testPointingPairs() {
+        csvTools.csvParseBoardCustom("testBoards.csv");
+        Board board = storeBoards.get(2);
+        board.initNotes();
+        board.pointingPairs();
+        if (board.board[63].contains(4) == false
+                && board.board[66].contains(6) == false
+                && board.board[67].contains(6) == false
+                && board.board[68].contains(6) == false
+                && board.board[57].contains(1) == false
+                && board.board[59].contains(1) == false) {
+            return "pointingPairs() works";
+        }
+        return "pointingPairs() does not work";
     }
 }

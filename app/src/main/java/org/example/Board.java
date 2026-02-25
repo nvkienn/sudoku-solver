@@ -369,6 +369,7 @@ class Board {
     // -->
 
     void guessSolve() { // --<
+        // returns true if Board is solvable
         ArrayList<Board> queue = new ArrayList<>();
         queue.add(new Board());
         queue.getFirst().board = Tools.copyBoard(board);
@@ -396,6 +397,7 @@ class Board {
             }
             queue.removeFirst();
         } while (queue.isEmpty() == false);
+        System.out.println("ERROR: BOARD IS NOT SOLVABLE.");
     }
 
     // -->

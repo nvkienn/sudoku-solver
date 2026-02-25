@@ -23,7 +23,8 @@ Cwd of program is in ./app and contains all boards
 Csv files containing boards are:  
 - test.csv (400,000+ boards)
 - sortedBoards.csv (generated)
-- customBoards.csv (manually added
+- testBoards.csv (used for testing rules)
+- custom.txt (manually added)
 
 ## Options
 
@@ -31,15 +32,15 @@ Csv files containing boards are:
 
 ```java
 public static void main(String[] args) {
-    // Default: solve(1000, false, false)
     // printBoard = true -> print the initial and solved state of Board when solving  
-    // custom = true -> read Boards from customBoards.csv instead of sortedBoards.csv
+    // custom = true -> read Boards from custom.txt instead of sortedBoards.csv
     solve(int numOfBoardToSolve, boolean printBoard, boolean custom)  
 
     // Uncomment to test whether the rules work
     // System.out.println(testHiddenSingles());
     // System.out.println(testobviousPairs());
     // System.out.println(testHiddenPairs());
+    // System.out.println(testPointingPairs());
 }
 
 
@@ -92,7 +93,7 @@ For example, applying `hiddenSingles()` has a larger effect on reducing the numb
 
 ## How It Works
 
-Check out [sudoku.com](https://sudoku.com/sudoku-rules/) for sudoku related phrases and how the rules work.
+Check out [sudoku.com/sudoku-rules](https://sudoku.com/sudoku-rules/) for sudoku related phrases and how the rules work.
 
 ### Board.java
 
