@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class App {
 
     public static void main(String[] args) {
-        // solve(1000, false, false);
+        // System.out.println(args);
+        solve(1000, false, false);
         // System.out.println(testHiddenSingles());
         // System.out.println(testobviousPairs());
         // System.out.println(testHiddenPairs());

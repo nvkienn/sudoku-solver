@@ -24,6 +24,7 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
 	
+	// gson
 	implementation("com.google.code.gson:gson:2.13.2")
 }
 
