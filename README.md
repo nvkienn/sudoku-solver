@@ -1,6 +1,18 @@
 # sudoku-solver
 
-## Running The Solver
+Jar file can be found under [releases](https://github.com/nvkienn/sudoku-solver/releases).  
+
+### Usage
+
+The jar file can be run with:
+```
+$ java -jar solver.jar <boards-file>
+```
+The CLI expects exactly one parameter specifying the file containing the boards to be solved.
+
+## Development:
+
+### Running The Solver
 
 ```
 $ ./gradlew build
@@ -14,7 +26,7 @@ or
 $ ./gradlew build run
 ```
 
-## Structure
+### Structure
 
 Source code is in ./app/src/main/java/org/example/  
 
@@ -26,9 +38,9 @@ Csv files containing boards are:
 - testBoards.csv (used for testing rules)
 - custom.txt (manually added)
 
-## Options
+### Options
 
-### App.java:
+#### App.java:
 
 ```java
 public static void main(String[] args) {
@@ -45,7 +57,7 @@ public static void main(String[] args) {
 
 
 ```
-### Board.java:
+#### Board.java:
 
 ```java
 void applyRules() {
@@ -62,12 +74,12 @@ void applyRules() {
 }
 ```
 
-#### Current rules being applied are only:  
+##### Current rules being applied are only:  
 
 1. Hidden Singles  
 2. Obvious Pairs
 
-#### Rules not applied:
+##### Rules not applied:
 
 1. Hidden Pairs (note that `hiddenSinglesAndPairs()` applies both rules hidden singles and hidden pairs)
 2. Pointing Pairs (the method also accounts for pointing triples)
@@ -95,7 +107,7 @@ For example, applying `hiddenSingles()` has a larger effect on reducing the numb
 
 Check out [sudoku.com/sudoku-rules](https://sudoku.com/sudoku-rules/) for sudoku related phrases and how the rules work.
 
-### Board.java
+#### Board.java
 
 ```java
 void solve() {
