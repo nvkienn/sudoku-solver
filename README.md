@@ -55,6 +55,7 @@ void applyRules() {
         this.hiddenSingles();
         this.obviousPairs();
         // this.hiddenPairs();
+    	// this.pointingPairs();
         // this.hiddenSinglesAndPairs();
     } while (Tools.isEqual(copyBoard.board, this.board) == false);
 }
@@ -68,6 +69,7 @@ void applyRules() {
 #### Rules not applied:
 
 1. Hidden Pairs (note that `hiddenSinglesAndPairs()` applies both rules hidden singles and hidden pairs)
+2. Pointing Pairs (the method also accounts for pointing triples)
 
 ## Measuring Solver Effectiveness
 
@@ -79,7 +81,8 @@ Applying `hiddenSingles()` yields the fastest solving speed compared to the rest
 
 Applying `obviousPairs()` on top negligibly increases solving speed, but reduces the number of times the rules are applied.
 
-Applying `hiddenPairs()` drastically reduces solving speed as the algorithm to find hiddenPairs is slow.
+Applying `hiddenPairs()` or `pointingPairs()` reduces solving speed. Although the number of times rules are applied decreases, the need to run through the board another time offsets the speed benefits.
+
 
 ### Number Of Times Rules Are Applied
 

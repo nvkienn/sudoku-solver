@@ -301,6 +301,9 @@ class Board {
         // hiddenSinglesOld + new obviousPairs: 7.7ms, average rating: 632
         // hiddenSingles: 6.3ms, average rating: 835
         // hiddenSingles + obviousPairs: 5.7ms, average rating: 640
+        // hiddenPairs: 52ms, average rating: 2878
+        // pointingPairs: 68ms, average rating: 2589
+        //
         // -->
         Board copyBoard = new Board();
         do {
@@ -308,8 +311,9 @@ class Board {
             numRulesApplied += 1;
             this.hiddenSingles();
             this.obviousPairs();
-            // this.hiddenSinglesAndPairs();
             // this.hiddenPairs();
+            // this.pointingPairs();
+            // this.hiddenSinglesAndPairs();
         } while (Tools.isEqual(copyBoard.board, this.board) == false);
     }
 
