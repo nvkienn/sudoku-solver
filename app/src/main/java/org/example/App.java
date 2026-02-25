@@ -60,6 +60,7 @@ public class App {
             System.out.println(
                     "------------------------------------------------------------------------------");
             if (printBoard == true) {
+                System.out.println("Initial board:");
                 Tools.printBoard(board.board);
             }
             long start = System.nanoTime();
@@ -71,6 +72,7 @@ public class App {
             totalTime += gap;
             totalRating += board.numRulesApplied;
             if (printBoard == true) {
+                System.out.println("Solved board:");
                 Tools.printBoard(board.board);
             }
             if (custom == true) {

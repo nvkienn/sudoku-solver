@@ -10,6 +10,24 @@ $ java -jar solver.jar <boards-file>
 ```
 The CLI expects exactly one parameter specifying the file containing the boards to be solved.
 
+#### Example of boards in a file:
+
+```
+> ..9.32......7.....162.......1..2.56....9......5....1.7......4.3.26..9.....587....
+> ..2.85..4....3..6...421..3........52......31.9........8....6...25.4....8.....16..
+> ..9.7.....8.4.......3....281.....67..2..13.4..4...78..6...3.....1.............284
+```
+- Every new line is a different board.
+
+- There can be as many boards as you want in your file.  
+
+- Each board should be made up of 81 characters.  
+
+- You read the board from left to right, then up to down. 
+
+- Any unfilled squares are represented with a "."
+
+
 ## Development:
 
 ### Running The Solver
@@ -107,7 +125,7 @@ For example, applying `hiddenSingles()` has a larger effect on reducing the numb
 
 Check out [sudoku.com/sudoku-rules](https://sudoku.com/sudoku-rules/) for sudoku related phrases and how the rules work.
 
-#### Board.java
+#### Board.java:
 
 ```java
 void solve() {
