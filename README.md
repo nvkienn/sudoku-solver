@@ -62,9 +62,14 @@ Csv files containing boards are:
 
 ```java
 public static void main(String[] args) {
-    // printBoard = true -> print the initial and solved state of Board when solving  
-    // custom = true -> read Boards from custom.txt instead of sortedBoards.csv
-    solve(int numOfBoardToSolve, boolean printBoard, boolean custom)  
+
+    // Add your own boards file and the solver will solve all boards in the file
+    // Solver will print the given boards and the solved boards
+    solve(fileName)
+
+    // For testing solver speed and efficiency
+    // Solver will solve 1000 hard boards from sortedBoards.csv
+    testSolve()
 
     // Uncomment to test whether the rules work
     // System.out.println(testHiddenSingles());
