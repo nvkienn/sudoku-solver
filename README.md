@@ -65,7 +65,7 @@ public static void main(String[] args) {
 
     // Add your own boards file and the solver will solve all boards in the file
     // Solver will print the given boards and the solved boards
-    solve(fileName)
+    solve("<fileName>")
 
     // For testing solver speed and efficiency
     // Solver will solve 1000 hard boards from sortedBoards.csv
