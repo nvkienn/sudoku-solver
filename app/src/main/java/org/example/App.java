@@ -17,7 +17,6 @@ public class App {
         } else {
             System.out.println("ERROR: solver.jar only takes exactly one file.");
         }
-        // testSolve();
         // System.out.println(testHiddenSingles());
         // System.out.println(testobviousPairs());
         // System.out.println(testHiddenPairs());
@@ -27,23 +26,25 @@ public class App {
     static ArrayList<Board> storeBoards = new ArrayList<>();
 
     static void solve(String fileName) {
-        solve(fileName, 0, true, true);
+        solve(fileName, 0, true);
     }
 
     static void testSolve() {
-        solve("", 1000, false, false);
+        solve("", 1000, false);
     }
 
-    static void solve(String fileName, int numOfBoardToSolve, boolean printBoard, boolean custom) {
+    static void solve(String fileName, int numOfBoardToSolve, boolean printBoard) {
 
         // to create sortedBoards.csv
         // csvTools.csvCreateSortedCsv(numOfBoards, asc(true/false));
 
-        if (custom == true) {
+        if (fileName != "") {
             csvTools.csvParseBoardCustom(fileName);
-            numOfBoardToSolve = storeBoards.size();
         } else {
             csvTools.csvParseBoard("sortedBoards.csv");
+        }
+        if (numOfBoardToSolve == 0) {
+            numOfBoardToSolve = storeBoards.size();
         }
 
         long totalTime = 0;
@@ -75,7 +76,7 @@ public class App {
                 System.out.println("Solved board:");
                 Tools.printBoard(board.board);
             }
-            if (custom == true) {
+            if (fileName != "") {
                 System.out.println(counter + ": " + "time taken: " + (gap) / 1_000_000.0 + "ms");
                 System.out.println("Number of times rules applied: " + board.numRulesApplied);
                 if (gap > longestTime) {
@@ -113,13 +114,13 @@ public class App {
                                 + (totalTime / numOfBoardToSolve / 1_000_000.0)
                                 + "ms");
                 System.out.println("Longest time taken: " + longestTime / 1_000_000.0 + "ms");
-                if (custom == false) {
+                if (fileName == "") {
                     System.out.println("Difficulty of longest to solve baord: " + difficulty);
                 }
                 System.out.println(
                         "Average number of times rules applied: "
                                 + totalRating / numOfBoardToSolve);
-                System.out.println("Maximum number of rules applied: " + ownDifficulty);
+                System.out.println("Maximum number of times rules applied: " + ownDifficulty);
                 System.out.println("Number of boards solved: " + numOfBoardToSolve);
                 System.out.println(
                         "Number of boards that required guessing: " + numberNeededToGuess);
